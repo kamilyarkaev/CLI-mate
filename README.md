@@ -10,3 +10,14 @@ I'm planning to make it accessible via terminal on Linux
 
 Using ASCII and Python rich library make a stylish terminal output
 
+>**From: June 22 19:19 2026       22.06.2026**.
+
+Added main menu and some options
+
+Implemented json database
+
+Updated backup get_weather to work correctly
+
+Functions that were added today: main_menu, greeting, data_base_reader_no_print, add_city, search_for_city(it uses open-meteo geocoding to find coordinates of the city), choose_an_option\
+
+Planning to add: changeble forecast display settings, description on why this programm also uses coordinates, access via terminal with 1 single command(on linux), stylish terminal output using ASCII and Python rich library( I consider this to be the hardest part of the programm)
