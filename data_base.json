@@ -1,0 +1,27 @@
+{
+    "Kazan’": {
+        "Country": "Russia",
+        "latitude": 55.78874,
+        "longitude": 49.12214
+    },
+    "Andijan": {
+        "Country": "Uzbekistan",
+        "latitude": 40.78338,
+        "longitude": 72.35067
+    },
+    "London": {
+        "Country": "United Kingdom",
+        "latitude": 51.50853,
+        "longitude": -0.12574
+    },
+    "Taipei": {
+        "Country": "Taiwan",
+        "latitude": 25.05306,
+        "longitude": 121.52639
+    },
+    "Pasadena": {
+        "Country": "United States",
+        "latitude": 29.69106,
+        "longitude": -95.2091
+    }
+}
