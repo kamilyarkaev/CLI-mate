@@ -9,15 +9,15 @@ import json
 def main_menu():
     while True:
         db = data_base_reader_no_print()
-
-        print("\n--- CLI-Mate Menu ---")
-        print("1. Get weather for a saved city")
-        print("2. Add a new city")
-        print("3. View saved cities and coordinates")
-        print("4. Change forecast display settings #Not done yet")
-        print("5. Why does this app use coordinates? #Not done yet")
-        print("6. Exit")
-        print("---------------------")
+        print("\t|------------------------|\t")
+        print("\n\t|--- CLI-Mate Menu ---|\t")
+        print("\t|1. Get weather for a saved city|\t")
+        print("\t|2. Add a new city|\t")
+        print("\t|3. View saved cities and coordinates|\t")
+        print("\t|4. Change forecast display settings #Not done yet|\t")
+        print("\t|5. Why does this app use coordinates? #Not done yet|\t")
+        print("\t|6. Exit|\t")
+        print("\t----------------------------\t")
 
         choice = input("Choose an option (1-6): ").strip()
 
@@ -65,8 +65,6 @@ def main_menu():
 
 
 
-
-
 def greeting():
     print("---Hello, this is a CLI forecast program, or CLI-Mate---")
     length = len(data_base_reader_no_print())
@@ -75,7 +73,7 @@ def greeting():
 
     
     else:
-        print("Redirecting to main menu")
+        print("Redirecting to main menu\n\n\n")
 
 
 
@@ -105,17 +103,18 @@ def add_city(city):
 
 
 def search_for_city():
-    city = input("Enter you city's name: ")
-    
-    payload = {
-        "name": city 
-    }
 
     url = "https://geocoding-api.open-meteo.com/v1/search"
     working = True
     
     while working:
         try:
+            
+            city = input("Enter you city's name: ")
+            
+            payload = {
+                "name": city 
+                }   
             response = requests.get(url,params = payload)
             print(response.status_code)
             data = response.json()
@@ -124,13 +123,15 @@ def search_for_city():
             country = data["results"][0]["country"]
             name = data["results"][0]["name"]
 
+            print("Successfull!")
             print(f"City:{name}, Country:{country}")
-            print(f"Latitude:{latitude}, Longitude:{longitude}")
+            print(f"Latitude:{latitude}, Longitude:{longitude}\n")
             dict = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
             }
             return dict
-        except:
+        except Exception as e:
+            print(f"Error details:{e}")
             print("Invalid, try again")
             continue
 
@@ -173,7 +174,6 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
         
             current_temp = data["current_weather"]["temperature"]
 
-            # 2. Выводим информацию без строки "The weather is..."
             print("--- Information (Backup) ---\n")
             print(f"Current temperature in {city_name}: {current_temp} degrees celsius")
             print("Weather retrieved successfully via coordinates.")
@@ -228,8 +228,8 @@ def get_weather(city_name, lat, lon):
             current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
 
-            print("--- Information---\n")
-            print(f"Current temperature in {city_name}:{current_temp} degrees celsius")
+            print("--- Information---")
+            print(f"Current temperature in {city_name} is {current_temp} degrees celsius")
             print(f"The weather is {current_weather_description}")
         
         
@@ -244,7 +244,7 @@ def get_weather(city_name, lat, lon):
             print("HTTP Status Code Guide:")
             print("200-299  Success! Everything worked perfectly.") 
             print("300-399  Redirect. The page moved somewhere else.")
-            print("400-499  Client Error. The problem is on YOUR side, and it's not about the programm, I(da developer) am precise at coding.")
+            print("400-499  Client Error. The problem is on YOUR side, and it's not about the programm, I(da developer) am precise.")
             print("500-599  Server Error. The problem is on THEIR side (the website/API is broken).")
             
             
