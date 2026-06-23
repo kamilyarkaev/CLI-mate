@@ -7,21 +7,30 @@ import json
 
 
 def main_menu():
+    show_menu_box = True
     while True:
         db = data_base_reader_no_print()
-        print("\t|------------------------|\t")
-        print("\n\t|--- CLI-Mate Menu ---|\t")
-        print("\t|1. Get weather for a saved city|\t")
-        print("\t|2. Add a new city|\t")
-        print("\t|3. View saved cities and coordinates|\t")
-        print("\t|4. Change forecast display settings #Not done yet|\t")
-        print("\t|5. Why does this app use coordinates? #Not done yet|\t")
-        print("\t|6. Exit|\t")
-        print("\t----------------------------\t")
+        
+        if show_menu_box:
+            print("\n" + "=" * 52)
+            print("                 CLI-Mate Menu ")
+            print("=" * 52)
+            print("  1. Get weather for a saved city")
+            print("  2. Add a new city")
+            print("  3. View saved cities and coordinates")
+            print("  4. Change forecast display settings (WIP)")
+            print("  5. Why does this app use coordinates? (WIP)")
+            print("  6. Exit")
+            print("=" * 52 + "\n")
 
-        choice = input("Choose an option (1-6): ").strip()
-
+        show_menu_box = False
+        choice = input("Choose an option (1-6) [or type 'm' to show menu]: ").strip().lower()
+        
         match choice:
+            case "m":
+                show_menu_box = True
+                continue
+        
             case "1":
                 if not db:
                     print("\nYour database is empty! Please add a city first (Option 2).")
@@ -116,7 +125,6 @@ def search_for_city():
                 "name": city 
                 }   
             response = requests.get(url,params = payload)
-            print(response.status_code)
             data = response.json()
             latitude = data["results"][0]["latitude"]
             longitude = data["results"][0]["longitude"]
@@ -220,7 +228,7 @@ def get_weather(city_name, lat, lon):
         response = requests.get(url, parameters)
 
         if response.status_code == 200:
-            print("Request success")
+            print("\n\n\nRequest success")
             print("Received text:")
             data = response.json()
         
@@ -228,7 +236,7 @@ def get_weather(city_name, lat, lon):
             current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
 
-            print("--- Information---")
+            print("\n\n--- Information---")
             print(f"Current temperature in {city_name} is {current_temp} degrees celsius")
             print(f"The weather is {current_weather_description}")
         
