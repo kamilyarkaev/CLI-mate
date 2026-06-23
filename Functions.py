@@ -105,7 +105,7 @@ def add_city(city):
 
 
 def search_for_city():
-    city = input("Enter you city's name")
+    city = input("Enter you city's name: ")
     
     payload = {
         "name": city 
@@ -202,7 +202,7 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
 
 def get_weather(city_name, lat, lon):
     try:
-        # 1. Строим адреса и параметры прямо здесь, используя полученные аргументы!
+
         url = f"https://wttr.in/{city_name}"
         parameters = {
             "format": "j1", 
