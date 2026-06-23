@@ -1,6 +1,8 @@
 ################ This is just a test of the requests to geocode
-###I used geocode because the program on the start only demands the city name from the user, but just the city is not enough, I also need coordinates for the backup get_weather function
-## Geocode from Openmeteo with just the name of the city gives out it's coordinates, you just need to pass city's name with the key "name" in a parameters dict as params in request.get
+###I used geocode because the program on the start only demands the city name from the user, but just the city is not enough,
+# I also need coordinates for the backup get_weather function
+## Geocode from Openmeteo with just the name of the city gives out it's coordinates,
+#  you just need to pass city's name with the key "name" in a parameters dict as params in request.get
 
 
 
