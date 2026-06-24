@@ -5,7 +5,7 @@
 It's still raw
 
 
-I'm planning to make it accessible via terminal on Linux
+I'm planning to make it accessible via terminal on Linux with just one command
 
 
 Using ASCII and Python rich library make a stylish terminal output
