@@ -32,7 +32,7 @@ Changeable forecast display, and other minor functions are still in work, I'm su
 
 > **From June 25 21:45 2026     25.06.2026**.
 
-I haven't done anything yesterday because of three reasons, first: I felt dizzy the whole morning, I felt asleep in the afternoon, and then when I woke up in the evening there was a power outage in my area so I couldn't use my computer
+I haven't done anything yesterday because of three reasons, first: I felt dizzy the whole morning, I felt asleep in the afternoon, and then when I woke up in the evening there was a power outage in my area, leaving me unable to use my computer
 
 
 Just now I have introduced myself to Python library called rich, it lets you customize your entire output in terminal,
