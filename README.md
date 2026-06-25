@@ -5,7 +5,7 @@
 It's still raw
 
 
-I'm planning to make it accessible via terminal on Linux
+I'm planning to make it accessible via terminal on Linux with just one command
 
 
 Using ASCII and Python rich library make a stylish terminal output
@@ -24,6 +24,8 @@ Planning to add: changeable forecast display settings, description on why this p
 >**From: June 23 17:44 2026      23.06.2026**.
 
 Updated main menu so it looks a lot more clear now and all of the huge text doesn't apper after you look out the weather
+
 I finally know how to use git through command line.
 So this is why at this moment on 23 June I already have 15 contributions(this is 5 times my average)
+
 Changeable forecast display, and other minor functions are still in work, I'm sure by the end of the week they'll be ready
