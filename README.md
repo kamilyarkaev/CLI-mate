@@ -29,3 +29,14 @@ I finally know how to use git through command line.
 So this is why at this moment on 23 June I already have 15 contributions(this is 5 times my average)
 
 Changeable forecast display, and other minor functions are still in work, I'm sure by the end of the week they'll be ready
+
+> **From June 25 21:45 2026     25.06.2026**.
+
+I haven't done anything yesterday because of three reasons, first: I felt dizzy the whole morning, I felt asleep in the afternoon, and then when I woke up in the evening there was a power outage in my area so I couldn't use my computer
+
+
+Just now I have introduced myself to Python library called rich, it lets you customize your entire output in terminal,
+
+For this moment I added some colors to outputs, but tomorrow I'm going to replace the current output with tables and ASCII arts.
+
+The customizable weather output is going to be ready tomorrow
