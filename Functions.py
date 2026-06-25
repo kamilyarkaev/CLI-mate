@@ -1,9 +1,18 @@
 import requests
 import json
+from rich.console import Console
+from rich.table import Table
+from rich import box
 
 
 
 
+
+
+
+
+
+console = Console()
 
 
 def main_menu():
@@ -12,6 +21,8 @@ def main_menu():
         db = data_base_reader_no_print()
         
         if show_menu_box:
+            console.clear()
+            
             print("\n" + "=" * 52)
             print("                 CLI-Mate Menu ")
             print("=" * 52)
@@ -33,7 +44,7 @@ def main_menu():
         
             case "1":
                 if not db:
-                    print("\nYour database is empty! Please add a city first (Option 2).")
+                    console.print("\n[bold red]Your database is empty! Please add a city first (Option 2)[/bold red].")
                 else:
                     selected_city = choose_an_option()
                     lat = db[selected_city]["latitude"]
@@ -41,7 +52,7 @@ def main_menu():
                     get_weather(selected_city, lat, lon)
 
             case "2":
-                print("\n--- Adding a New City ---")
+                print("\n\n--- Adding a New City ---")
                 add_city(search_for_city())
 
             case "3":
@@ -50,7 +61,7 @@ def main_menu():
                 else:
                     print("\n--- Saved Cities and Coordinates ---")
                     for city_name, coords in db.items():
-                        print(f"* {city_name} ({coords['Country']}) — Latitude: {coords['latitude']}, Longitude: {coords['longitude']}")
+                        console.print(f"* [bold yellow]{city_name}[/] ([bold green]{coords['Country']}[/]) — Latitude: [bold orange3]{coords['latitude']}[/], Longitude: [bold deep_sky_blue1]{coords['longitude']}[/]", highlight= False)
 
             case "4":
                 print("\n[WIP] This setting will be available tomorrow!")
@@ -119,7 +130,7 @@ def search_for_city():
     while working:
         try:
             
-            city = input("Enter you city's name: ")
+            city = input("Enter your city's name: ")
             
             payload = {
                 "name": city 
@@ -131,9 +142,8 @@ def search_for_city():
             country = data["results"][0]["country"]
             name = data["results"][0]["name"]
 
-            print("Successfull!")
-            print(f"City:{name}, Country:{country}")
-            print(f"Latitude:{latitude}, Longitude:{longitude}\n")
+            console.print(f"City:[bold yellow]{name}[/], Country:[bold green]{country}[/]", highlight= False)
+            console.print(f"Latitude:[bold orange3]{latitude}[/], Longitude:[bold deep_sky_blue1]{longitude}[/]\n",highlight= False)
             dict = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
             }
@@ -158,7 +168,7 @@ def choose_an_option():
     
     print("\nYour saved cities:")
     for index, city_name in enumerate(current_list, 1):
-        print(f"{index}. {city_name}")
+        console.print(f"{index}. [bold yellow]{city_name}[/]")
         
     choice = int(input("Choose the number of the saved city to see weather: "))
     selected_city = current_list[choice - 1]
