@@ -171,9 +171,8 @@ def search_for_city():
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
             }
             return dict
-        except Exception as e:
-            print(f"Error details:{e}")
-            print("Invalid, try again")
+        except Exception :
+            console.print(f"[bold red]Error,[/][bold #b8bb26]Try to write the name differently[/]")
             continue
 
 
