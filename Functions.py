@@ -3,6 +3,7 @@ import json
 from rich.console import Console
 from rich.table import Table
 from rich import box
+import time
 
 
 
@@ -117,10 +118,12 @@ def greeting():
     length = len(data_base_reader_no_print())
     if length < 1:
         add_city(search_for_city())
+        time.sleep(1.1)
 
     
     else:
         console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
+        time.sleep(0.5)
 
 
 
@@ -277,7 +280,7 @@ def get_weather(city_name, lat, lon):
         response = requests.get(url, parameters)
 
         if response.status_code == 200:
-            console.print("[bold #b8bb26]\nRequest success[/]")
+            console.print("[bold #b8bb26]\nRequest to wttr.in success[/]")
             data = response.json()
         
             current_temp = data["current_condition"][0]["temp_C"]
