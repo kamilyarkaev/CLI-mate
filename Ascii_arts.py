@@ -1,3 +1,6 @@
+####I found this art on https://emojicombos.com/sun-ascii-art
+
+
 weather_arts = {
     "1": (
         "[bold #fabd2f]⠀⠀⠀⠀⠀⠀⠀⢴⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]\n"
