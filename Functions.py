@@ -28,10 +28,19 @@ menu_table.add_row("  6. Exit", style= "bold #b8bb26")
 
 
 
+def data_base_reader_no_print():
+    with open("data_base.json", "r", encoding="utf-8") as file:
+        data_base = json.load(file)
+        return(data_base)
+
+
+
+
 
 def main_menu():
     show_menu_box = True
     while True:
+        
         db = data_base_reader_no_print()
         
         if show_menu_box:
@@ -40,7 +49,7 @@ def main_menu():
 
 
         show_menu_box = False
-        choice = console.input("[bold #fabd2f]Choose an option (1-6) [or type 'm' to show menu]: [/bold #fabd2f]").strip().lower()
+        choice = console.input("[bold #fabd2f]Choose an option (1-6) [or type 'm' to show menu]: [/]").strip().lower()
         
         match choice:
             case "m":
@@ -57,16 +66,14 @@ def main_menu():
                     get_weather(selected_city, lat, lon)
 
             case "2":
-                print("\n\n--- Adding a New City ---")
+                console.print("\n\n[bold #fabd2f]Adding a New City[/]")
                 add_city(search_for_city())
 
             case "3":
                 if not db:
                     print("\nYour database is empty!")
                 else:
-                    print("\n--- Saved Cities and Coordinates ---")
-                    for city_name, coords in db.items():
-                        console.print(f"* [bold yellow]{city_name}[/] ([bold green]{coords['Country']}[/]) — Latitude: [bold orange3]{coords['latitude']}[/], Longitude: [bold deep_sky_blue1]{coords['longitude']}[/]", highlight= False)
+                    console.print(saves_cities_and_coords())
 
             case "4":
                 print("\n[WIP] This setting will be available tomorrow!")
@@ -88,26 +95,33 @@ def main_menu():
 
 
 
+def saves_cities_and_coords():
+        current_db = data_base_reader_no_print()
+        
+        saved_cities_table = Table(
+        title="[bold #fabd2f]Saved Cities and Coordinates[/bold #fabd2f]", 
+        box=box.ROUNDED,
+        show_header=False,
+        border_style="#928374"
+        )
+        for city_name, coords in current_db.items():
+            saved_cities_table.add_row(f" [bold #fabd2f]{city_name}[/] ([bold #b8bb26]{coords['Country']}[/]) — [bold #928374]Latitude:[/] [bold #fe8019]{coords['latitude']}[/], [bold #928374]Longitude:[/] [bold #83a598]{coords['longitude']}[/]")
+
+        return saved_cities_table
+
+
 
 
 def greeting():
-    print("---Hello, this is a CLI forecast program, or CLI-Mate---")
+    console.print("[bold #fabd2f]Hello, this is a CLI forecast program, or CLI-Mate[/]")
     length = len(data_base_reader_no_print())
     if length < 1:
         add_city(search_for_city())
 
     
     else:
-        print("Redirecting to main menu\n\n\n")
+        console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
 
-
-
-
-
-def data_base_reader_no_print():
-    with open("data_base.json", "r", encoding="utf-8") as file:
-        data_base = json.load(file)
-        return(data_base)
 
 
 
@@ -135,7 +149,7 @@ def search_for_city():
     while working:
         try:
             
-            city = input("Enter your city's name: ")
+            city = console.input("[bold #b8bb26]Enter your city's name: [/]")
             
             payload = {
                 "name": city 
@@ -147,8 +161,8 @@ def search_for_city():
             country = data["results"][0]["country"]
             name = data["results"][0]["name"]
 
-            console.print(f"City:[bold yellow]{name}[/], Country:[bold green]{country}[/]", highlight= False)
-            console.print(f"Latitude:[bold orange3]{latitude}[/], Longitude:[bold deep_sky_blue1]{longitude}[/]\n",highlight= False)
+            console.print(f"[bold #928374]City:[/][bold #fabd2f]{name}[/], [bold #928374]Country:[/][bold #b8bb26]{country}[/]", highlight= False)
+            console.print(f"[bold #928374]Latitude:[/][bold #fe8019]{latitude}[/], [bold #928374]Longitude:[/][bold #83a598]{longitude}[/]\n",highlight= False)
             console.rule(style="bold #928374")
             dict = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
@@ -172,11 +186,22 @@ def choose_an_option():
     current_db = data_base_reader_no_print()
     current_list = list(current_db.keys())
     
-    print("\nYour saved cities:")
+    if len(current_list) == 1:
+        selected_city = current_list[0]
+        return selected_city
+    
+    
+    saved_cities_table = Table(
+        title="[bold #fabd2f]Saved Cities[/]",
+        box = box.ROUNDED,
+        border_style="#928374",
+        show_header= False
+    )
+    
     for index, city_name in enumerate(current_list, 1):
-        console.print(f"{index}. [bold yellow]{city_name}[/]")
-        
-    choice = int(input("Choose the number of the saved city to see weather: "))
+        saved_cities_table.add_row(f"{index}. [bold yellow]{city_name}[/]")
+    console.print(saved_cities_table)
+    choice = int(console.input("[bold #b8bb26]Choose the number of the saved city to see weather: [/]"))
     selected_city = current_list[choice - 1]
     return selected_city
 
@@ -226,7 +251,15 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
 
 def get_weather(city_name, lat, lon):
     try:
-
+        
+        weather_table = Table(
+        title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
+        box=box.ROUNDED,
+        show_header=False,
+        border_style="#928374"
+        )
+        
+        
         url = f"https://wttr.in/{city_name}"
         parameters = {
             "format": "j1", 
@@ -244,18 +277,15 @@ def get_weather(city_name, lat, lon):
         response = requests.get(url, parameters)
 
         if response.status_code == 200:
-            print("\n\n\nRequest success")
-            print("Received text:")
+            console.print("[bold #b8bb26]\nRequest success[/]")
             data = response.json()
         
             current_temp = data["current_condition"][0]["temp_C"]
             current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
-
-            print("\n\n--- Information---")
-            print(f"Current temperature in {city_name} is {current_temp} degrees celsius")
-            print(f"The weather is {current_weather_description}")
-        
+            weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+            weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
+            console.print(weather_table)
         
         
         
