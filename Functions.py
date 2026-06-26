@@ -83,11 +83,11 @@ def main_menu():
                 print("\n[WIP] The coordinate explainer is coming tomorrow!")
 
             case "6":
-                print("\nThank you for using CLI-Mate! Goodbye!")
+                console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
                 break
 
             case _:
-                print("\nInvalid choice, please enter a number from 1 to 6.")
+                console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
 
 
 
