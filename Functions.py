@@ -13,6 +13,20 @@ from rich import box
 
 
 console = Console()
+menu_table = Table(
+    title="[bold #fabd2f]CLI-Mate Menu[/bold #fabd2f]", 
+    box=box.ROUNDED,
+    show_header=False,
+    border_style="#928374"
+)
+menu_table.add_row("  1. Get weather for a saved city", style= "bold #b8bb26")
+menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
+menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
+menu_table.add_row("  4. Change forecast display settings (WIP)", style= "bold #b8bb26")
+menu_table.add_row("  5. Why does this app use coordinates? (WIP)", style= "bold #b8bb26")
+menu_table.add_row("  6. Exit", style= "bold #b8bb26")
+
+
 
 
 def main_menu():
@@ -22,20 +36,11 @@ def main_menu():
         
         if show_menu_box:
             console.clear()
-            
-            print("\n" + "=" * 52)
-            print("                 CLI-Mate Menu ")
-            print("=" * 52)
-            print("  1. Get weather for a saved city")
-            print("  2. Add a new city")
-            print("  3. View saved cities and coordinates")
-            print("  4. Change forecast display settings (WIP)")
-            print("  5. Why does this app use coordinates? (WIP)")
-            print("  6. Exit")
-            print("=" * 52 + "\n")
+            console.print(menu_table)
+
 
         show_menu_box = False
-        choice = input("Choose an option (1-6) [or type 'm' to show menu]: ").strip().lower()
+        choice = console.input("[bold #fabd2f]Choose an option (1-6) [or type 'm' to show menu]: [/bold #fabd2f]").strip().lower()
         
         match choice:
             case "m":
@@ -144,6 +149,7 @@ def search_for_city():
 
             console.print(f"City:[bold yellow]{name}[/], Country:[bold green]{country}[/]", highlight= False)
             console.print(f"Latitude:[bold orange3]{latitude}[/], Longitude:[bold deep_sky_blue1]{longitude}[/]\n",highlight= False)
+            console.rule(style="bold #928374")
             dict = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
             }
