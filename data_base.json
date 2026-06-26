@@ -1,1 +1,12 @@
-{}
+{
+    "Andijan": {
+        "Country": "Uzbekistan",
+        "latitude": 40.78338,
+        "longitude": 72.35067
+    },
+    "Colombo": {
+        "Country": "Sri Lanka",
+        "latitude": 6.93548,
+        "longitude": 79.84868
+    }
+}

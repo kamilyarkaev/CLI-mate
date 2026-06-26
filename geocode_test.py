@@ -30,7 +30,6 @@ name = data["results"][0]["name"]
 
 print(f"City:{name}, Country:{country}")
 print(f"Latitude:{latitude}, Longitude:{longitude}")
-print("I hope these are correct because otherwise I don't know how to let you choose beetween the avaible options")
 
 
 

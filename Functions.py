@@ -204,6 +204,7 @@ def choose_an_option():
     for index, city_name in enumerate(current_list, 1):
         saved_cities_table.add_row(f"{index}. [bold yellow]{city_name}[/]")
     console.print(saved_cities_table)
+    console.rule(style="bold #928374")
     choice = int(console.input("[bold #b8bb26]Choose the number of the saved city to see weather: [/]"))
     selected_city = current_list[choice - 1]
     return selected_city
@@ -214,22 +215,26 @@ def choose_an_option():
 
 def get_weather_backup(backup_url, backup_parameters, city_name):
     
+    backup_weather_table = Table(
+    title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
+    box=box.ROUNDED,
+    show_header=False,
+    border_style="#928374"
+    )
     
     try:
 
         response = requests.get(backup_url, backup_parameters)
 
         if response.status_code == 200:
-            print("Request success")
-            print("Received text:")
+            console.print("[bold #b8bb26]\nRequest to open meteo: success[/]")
             data = response.json()
         
             current_temp = data["current_weather"]["temperature"]
 
-            print("--- Information (Backup) ---\n")
-            print(f"Current temperature in {city_name}: {current_temp} degrees celsius")
-            print("Weather retrieved successfully via coordinates.")
-        
+            backup_weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+            console.print(backup_weather_table)
+            
    
         else:
             print(f"Request error: {response.status_code}")
@@ -280,7 +285,7 @@ def get_weather(city_name, lat, lon):
         response = requests.get(url, parameters)
 
         if response.status_code == 200:
-            console.print("[bold #b8bb26]\nRequest to wttr.in success[/]")
+            console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
             data = response.json()
         
             current_temp = data["current_condition"][0]["temp_C"]
