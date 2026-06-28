@@ -6,7 +6,7 @@ from rich import box
 import time
 from datetime import datetime
 from Ascii_arts import weather_arts
-
+import random
 
 
 
@@ -85,7 +85,17 @@ def main_menu():
                     console.print(saves_cities_and_coords())
 
             case "4":
-                pass
+                choice_table = Table(
+                title=f"[bold #fabd2f]Types of forecast display I can code[/bold #fabd2f]", 
+                box=box.ROUNDED,
+                show_header=False,  
+                border_style="#928374"
+                )
+                choice_table.add_row("Short(just current time)", style= "bold #b8bb26")
+                choice_table.add_row("Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
+                choice_table.add_row("Deatiled(the next 24 hours)", style= "bold #b8bb26")
+                
+                choice = console.input("bold #fabd2f]Enter a number(1-3)[/]")
 
             case "5":
                 print("\n[WIP] The coordinate explainer is coming tomorrow!")
@@ -128,11 +138,12 @@ def get_forecasts_by_type(data, city_name):
     current_hour = datetime.now().hour
     upcoming = []
 
+    
     choice = "short"
     match choice:
         
         
-        case "deafult":
+        case "default":
     
             for item in data["weather"][0]["hourly"]:
                 hour_val = int(item["time"]) // 100  
@@ -157,23 +168,39 @@ def get_forecasts_by_type(data, city_name):
                         break
 
 
-            yield upcoming[:2]
+            return upcoming[:2]
         
 
         case "short":
-                weather_table = Table(
-                title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
-                box=box.ROUNDED,
-                show_header=False,
-                border_style="#928374"
-                )
-                
                 current_temp = data["current_condition"][0]["temp_C"]
                 current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
-                weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-                weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
-                yield weather_table
+                
+                
+                random_art = random.choice(weather_arts[get_weather_category(current_weather_description)])
+
+
+                weather_table = Table(
+                title=f"[bold #fabd2f]Current weather in {city_name}[/bold #fabd2f]", 
+                box=box.ROUNDED,
+                show_header=False,  
+                border_style="#928374"
+                )
+        
+                weather_table.add_column("Art", justify="center", vertical="middle")
+                weather_table.add_column("Info", justify="left", vertical="middle")
+                
+                
+
+
+                left_column = f"[bold #b8bb26]The weather is {current_weather_description}\n\n{random_art}[/]"
+                right_column = f"[bold #928374]It is [/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/] in [bold #fabd2f]{city_name}[/]"
+                
+                weather_table.add_row(left_column, right_column)
+                
+                return weather_table
+        
+
         
 
 
@@ -190,14 +217,16 @@ def get_forecasts_by_type(data, city_name):
                         "desc": item["weatherDesc"][0]["value"]
                     })
             for item in data["weather"][1]["hourly"]:
-                hour_val = int(item["time"])
+                hour_val = int(item["time"])//100
                 upcoming.append({
-                    "day": "Today",
+                    "day": "Tomorrow",
                     "time": f"{hour_val:02d}:00",
                     "temp": item["temp_C"],
                     "desc": item["weatherDesc"][0]["value"]
-                })
-            yield upcoming
+                    })
+                if len(upcoming) == 8:
+                    break
+            return upcoming
 
 
 
