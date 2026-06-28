@@ -4,7 +4,8 @@ from rich.console import Console
 from rich.table import Table
 from rich import box
 import time
-
+from datetime import datetime
+from Ascii_arts import weather_arts
 
 
 
@@ -50,13 +51,20 @@ def main_menu():
 
 
         show_menu_box = False
-        choice = console.input("[bold #fabd2f]Choose an option (1-6) [or type 'm' to show menu]: [/]").strip().lower()
+        choice = console.input("[bold #fabd2f]Choose an option (1-6) or type 'm' to show menu or clear to clear terminal: [/]").strip().lower()
         
         match choice:
             case "m":
                 show_menu_box = True
                 continue
         
+            
+            case "clear":
+                console.clear()
+                continue
+
+
+
             case "1":
                 if not db:
                     console.print("\n[bold red]Your database is empty! Please add a city first (Option 2)[/bold red].")
@@ -88,6 +96,69 @@ def main_menu():
 
             case _:
                 console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
+
+
+
+
+
+
+def get_weather_category(description):
+    desc = description.lower()
+    if "thunder" in desc or "storm" in desc:
+        return "storm"
+    elif "snow" in desc or "ice" in desc or "hail" in desc:
+        return "snowy"
+    elif "sleet" in desc or "freezing" in desc:
+        return "sleet"
+    elif "rain" in desc or "drizzle" in desc or "shower" in desc:
+        return "rainy"
+    elif "fog" in desc or "mist" in desc or "haze" in desc:
+        return "foggy"
+    elif "cloud" in desc or "overcast" in desc:
+        return "cloudy"
+    elif "wind" in desc or "blizzard" in desc:
+        return "windy"
+    else:
+        return "sunny"  # default
+
+
+
+
+def get_next_forecasts(data):
+    current_hour = datetime.now().hour
+    upcoming = []
+
+
+    for item in data["weather"][0]["hourly"]:
+        hour_val = int(item["time"]) // 100  
+        if hour_val > current_hour:
+            upcoming.append({
+                "day": "Today",
+                "time": f"{hour_val:02d}:00",
+                "temp": item["temp_C"],
+                "desc": item["weatherDesc"][0]["value"]
+            })
+
+    if len(upcoming) < 2:
+        for item in data["weather"][1]["hourly"]:
+            hour_val = int(item["time"]) // 100
+            upcoming.append({
+                "day": "Tomorrow",
+                "time": f"{hour_val:02d}:00",
+                "temp": item["temp_C"],
+                "desc": item["weatherDesc"][0]["value"]
+            })
+            if len(upcoming) >= 2:
+                break
+
+
+    return upcoming[:2]
+
+
+
+
+
+
 
 
 
@@ -252,6 +323,60 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
         print("Something went wrong, idk what")
 
 
+def print_weather(data, city_name):
+    weather_table = Table(
+    title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
+    box=box.ROUNDED,
+    show_header=False,
+    border_style="#928374"
+    )
+
+
+
+    current_temp = data["current_condition"][0]["temp_C"]
+    current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
+
+    weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+    weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
+    #console.print(weather_table)
+
+
+
+
+
+
+    
+    
+    
+    
+    #for default weather setting
+    current_hour = datetime.now().hour
+    upcoming = []
+    
+    #finding out what current time is and what are next hours in the response from the website
+    for item in data["weather"][0]["hourly"]:
+        hour_val = int(item["time"]) // 100  
+        if hour_val > current_hour:
+            upcoming.append({
+                "day": "Today",
+                "time": f"{hour_val:02d}:00",
+                "tep": item["temp_C"],
+                "desc": item["weatherDesc"][0]["value"]
+            })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ####  Main weather getting function
@@ -265,6 +390,10 @@ def get_weather(city_name, lat, lon):
         show_header=False,
         border_style="#928374"
         )
+        
+        
+        
+        
         
         
         url = f"https://wttr.in/{city_name}"
@@ -287,13 +416,13 @@ def get_weather(city_name, lat, lon):
             console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
             data = response.json()
         
-            current_temp = data["current_condition"][0]["temp_C"]
-            current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
+            #current_temp = data["current_condition"][0]["temp_C"]
+            #current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
-            weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-            weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
-            console.print(weather_table)
-        
+            #weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+            #weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
+            #console.print(weather_table)
+            return data, city_name
         
         
    

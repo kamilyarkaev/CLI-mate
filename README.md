@@ -21,6 +21,7 @@ Updated backup get_weather to work correctly
 Functions that were added today: main_menu, greeting, data_base_reader_no_print, add_city, search_for_city(it uses open-meteo geocoding to find coordinates of the city), choose_an_option
 
 Planning to add: changeable forecast display settings, description on why this programm also uses coordinates, access via terminal with 1 single command(on linux), stylish terminal output using ASCII and Python rich library( I consider this to be the hardest part of the programm)
+
 >**From: June 23 17:44 2026      23.06.2026**.
 
 Updated main menu so it looks a lot more clear now and all of the huge text doesn't apper after you look out the weather
