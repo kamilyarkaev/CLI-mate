@@ -85,7 +85,7 @@ def main_menu():
                     console.print(saves_cities_and_coords())
 
             case "4":
-                print("\n[WIP] This setting will be available tomorrow!")
+                pass
 
             case "5":
                 print("\n[WIP] The coordinate explainer is coming tomorrow!")
@@ -124,35 +124,83 @@ def get_weather_category(description):
 
 
 
-def get_next_forecasts(data):
+def get_forecasts_by_type(data, city_name):
     current_hour = datetime.now().hour
     upcoming = []
 
+    choice = "short"
+    match choice:
+        
+        
+        case "deafult":
+    
+            for item in data["weather"][0]["hourly"]:
+                hour_val = int(item["time"]) // 100  
+                if hour_val > current_hour:
+                    upcoming.append({
+                        "day": "Today",
+                        "time": f"{hour_val:02d}:00",
+                        "temp": item["temp_C"],
+                        "desc": item["weatherDesc"][0]["value"]
+                    })
 
-    for item in data["weather"][0]["hourly"]:
-        hour_val = int(item["time"]) // 100  
-        if hour_val > current_hour:
-            upcoming.append({
-                "day": "Today",
-                "time": f"{hour_val:02d}:00",
-                "temp": item["temp_C"],
-                "desc": item["weatherDesc"][0]["value"]
-            })
-
-    if len(upcoming) < 2:
-        for item in data["weather"][1]["hourly"]:
-            hour_val = int(item["time"]) // 100
-            upcoming.append({
-                "day": "Tomorrow",
-                "time": f"{hour_val:02d}:00",
-                "temp": item["temp_C"],
-                "desc": item["weatherDesc"][0]["value"]
-            })
-            if len(upcoming) >= 2:
-                break
+            if len(upcoming) < 2:
+                for item in data["weather"][1]["hourly"]:
+                    hour_val = int(item["time"]) // 100
+                    upcoming.append({
+                        "day": "Tomorrow",
+                        "time": f"{hour_val:02d}:00",
+                        "temp": item["temp_C"],
+                        "desc": item["weatherDesc"][0]["value"]
+                    })
+                    if len(upcoming) >= 2:
+                        break
 
 
-    return upcoming[:2]
+            yield upcoming[:2]
+        
+
+        case "short":
+                weather_table = Table(
+                title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
+                box=box.ROUNDED,
+                show_header=False,
+                border_style="#928374"
+                )
+                
+                current_temp = data["current_condition"][0]["temp_C"]
+                current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
+
+                weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+                weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
+                yield weather_table
+        
+
+
+
+
+        case "detailed":
+            for item in data["weather"][0]["hourly"]:
+                hour_val = int(item["time"]) // 100  
+                if hour_val > current_hour:
+                    upcoming.append({
+                        "day": "Today",
+                        "time": f"{hour_val:02d}:00",
+                        "temp": item["temp_C"],
+                        "desc": item["weatherDesc"][0]["value"]
+                    })
+            for item in data["weather"][1]["hourly"]:
+                hour_val = int(item["time"])
+                upcoming.append({
+                    "day": "Today",
+                    "time": f"{hour_val:02d}:00",
+                    "temp": item["temp_C"],
+                    "desc": item["weatherDesc"][0]["value"]
+                })
+            yield upcoming
+
+
+
 
 
 
@@ -324,46 +372,7 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
 
 
 def print_weather(data, city_name):
-    weather_table = Table(
-    title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
-    box=box.ROUNDED,
-    show_header=False,
-    border_style="#928374"
-    )
-
-
-
-    current_temp = data["current_condition"][0]["temp_C"]
-    current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
-
-    weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-    weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
-    #console.print(weather_table)
-
-
-
-
-
-
-    
-    
-    
-    
-    #for default weather setting
-    current_hour = datetime.now().hour
-    upcoming = []
-    
-    #finding out what current time is and what are next hours in the response from the website
-    for item in data["weather"][0]["hourly"]:
-        hour_val = int(item["time"]) // 100  
-        if hour_val > current_hour:
-            upcoming.append({
-                "day": "Today",
-                "time": f"{hour_val:02d}:00",
-                "tep": item["temp_C"],
-                "desc": item["weatherDesc"][0]["value"]
-            })
-
+    pass
 
 
 
