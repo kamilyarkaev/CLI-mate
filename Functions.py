@@ -72,7 +72,12 @@ def main_menu():
                     selected_city = choose_an_option()
                     lat = db[selected_city]["latitude"]
                     lon = db[selected_city]["longitude"]
-                    get_weather(selected_city, lat, lon)
+                    data, city = get_weather(selected_city, lat, lon)
+                    if data:
+                        
+                        table_to_print = get_forecasts_by_type(data, city, choice)
+                        console.print(table_to_print)
+
 
             case "2":
                 console.print("\n\n[bold #fabd2f]Adding a New City[/]")
@@ -86,7 +91,7 @@ def main_menu():
 
             case "4":
                 choice_table = Table(
-                title=f"[bold #fabd2f]Types of forecast display I can code[/bold #fabd2f]", 
+                title=f"[bold #fabd2f]Types of forecast displays I can code[/bold #fabd2f]", 
                 box=box.ROUNDED,
                 show_header=False,  
                 border_style="#928374"
@@ -96,6 +101,13 @@ def main_menu():
                 choice_table.add_row("Deatiled(the next 24 hours)", style= "bold #b8bb26")
                 
                 choice = console.input("bold #fabd2f]Enter a number(1-3)[/]")
+
+                match choice:
+                    case "1":
+                        pass
+
+
+
 
             case "5":
                 print("\n[WIP] The coordinate explainer is coming tomorrow!")
@@ -134,12 +146,10 @@ def get_weather_category(description):
 
 
 
-def get_forecasts_by_type(data, city_name):
+def get_forecasts_by_type(data, city_name,choice):
     current_hour = datetime.now().hour
     upcoming = []
 
-    
-    choice = "short"
     match choice:
         
         
@@ -268,10 +278,49 @@ def greeting():
         add_city(search_for_city())
         time.sleep(1.1)
 
-    
     else:
-        console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
+        console.print("[bold #928374]Choose a forecast display type[/]\n\n\n")
         time.sleep(0.5)
+
+    
+    choice_table = Table(
+    title=f"[bold #fabd2f]Types of forecast displays[/bold #fabd2f]", 
+    box=box.ROUNDED,
+    show_header=False,  
+    border_style="#928374"
+    )
+    choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
+    choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
+    choice_table.add_row("3. Detailed(the next 24 hours)", style= "bold #b8bb26")
+    console.print(choice_table)
+
+    working = True
+
+    global display_mode
+    
+    
+    while working:
+        choice = console.input("[bold #fabd2f]Enter a number(1-3)[/]")
+        #validation of choice
+        match choice:
+            case "1":
+                choice = "short"
+                working = False
+            case "2":
+                choice = "default"
+                working = False
+
+            case "3":
+                choice = "detailed"
+                working = False
+            case _:
+                continue
+
+        
+        
+        
+        #console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
+        #time.sleep(0.5)
 
 
 
