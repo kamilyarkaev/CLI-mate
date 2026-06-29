@@ -13,6 +13,22 @@ import random
 
 
 
+EMOJIS = {
+    "sunny": "☀️",
+    "cloudy": "☁️",
+    "foggy": "🌫️",
+    "rainy": "🌧️",
+    "snowy": "🌨️",
+    "sleet": "❄️",
+    "storm": "⛈️",
+    "windy": "💨"
+}
+
+
+
+
+
+
 
 console = Console()
 menu_table = Table(
@@ -24,7 +40,7 @@ menu_table = Table(
 menu_table.add_row("  1. Get weather for a saved city", style= "bold #b8bb26")
 menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
 menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
-menu_table.add_row("  4. Change forecast display settings (WIP)", style= "bold #b8bb26")
+menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
 menu_table.add_row("  5. Why does this app use coordinates? (WIP)", style= "bold #b8bb26")
 menu_table.add_row("  6. Exit", style= "bold #b8bb26")
 
@@ -36,10 +52,13 @@ def data_base_reader_no_print():
         return(data_base)
 
 
-
+display_mode = "default"
 
 
 def main_menu():
+    global display_mode
+    
+    
     show_menu_box = True
     while True:
         
@@ -51,9 +70,16 @@ def main_menu():
 
 
         show_menu_box = False
-        choice = console.input("[bold #fabd2f]Choose an option (1-6) or type 'm' to show menu or clear to clear terminal: [/]").strip().lower()
+        choice = console.input("[bold #fabd2f]You are in menu, choose an option (1-6) or type 'm' to show menu or clear to clear: [/]").strip().lower()
         
         match choice:
+            
+            case "exit" | "6":
+                console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
+                break
+            
+            
+            
             case "m":
                 show_menu_box = True
                 continue
@@ -75,7 +101,7 @@ def main_menu():
                     data, city = get_weather(selected_city, lat, lon)
                     if data:
                         
-                        table_to_print = get_forecasts_by_type(data, city, choice)
+                        table_to_print = get_forecasts_by_type(data, city, display_mode)
                         console.print(table_to_print)
 
 
@@ -90,31 +116,62 @@ def main_menu():
                     console.print(saves_cities_and_coords())
 
             case "4":
+                global choice_table
+                
                 choice_table = Table(
-                title=f"[bold #fabd2f]Types of forecast displays I can code[/bold #fabd2f]", 
+                title=f"[bold #fabd2f]Types of forecast displays,[/] [bold #b8bb26]current: {display_mode}[/]", 
                 box=box.ROUNDED,
                 show_header=False,  
                 border_style="#928374"
                 )
-                choice_table.add_row("Short(just current time)", style= "bold #b8bb26")
-                choice_table.add_row("Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
-                choice_table.add_row("Deatiled(the next 24 hours)", style= "bold #b8bb26")
+                choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
+                choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
+                choice_table.add_row("3. Deatiled(the next 24 hours)", style= "bold #b8bb26")
                 
-                choice = console.input("bold #fabd2f]Enter a number(1-3)[/]")
+                console.print(choice_table)
+                
 
-                match choice:
-                    case "1":
-                        pass
+                
+                display_mode_choice = True
+                while display_mode_choice:
+                    choice = console.input("[bold #fabd2f]Enter a number(1-3) or e to leave: [/]").strip().lower()
+                    
+                    match choice:
+                        case "e":
+                            break
+                        
+                        
+                        case "1" | "short":
+                            display_mode = "short"
+                            display_mode_choice = False
+                            console.print("[bold #b8bb26]Set to short[/]")
 
+
+                        
+                        
+                        case "2" | "default":
+                            display_mode = "default"
+                            display_mode_choice = False
+                            console.print("[bold #b8bb26]Set to default[/]")                    
+                        
+                        
+                        
+                        case "3" | "detailed":
+                            display_mode = "detailed" 
+                            display_mode_choice = False
+                            console.print("[bold #b8bb26]Set to detailed[/]")                        
+                        case _:
+                            console.print(f"[bold red]Enter a number (1-3)[/]")
+
+
+                    
 
 
 
             case "5":
                 print("\n[WIP] The coordinate explainer is coming tomorrow!")
 
-            case "6":
-                console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
-                break
+
 
             case _:
                 console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
@@ -141,7 +198,7 @@ def get_weather_category(description):
     elif "wind" in desc or "blizzard" in desc:
         return "windy"
     else:
-        return "sunny"  # default
+        return "sunny"  # this is default
 
 
 
@@ -149,6 +206,10 @@ def get_weather_category(description):
 def get_forecasts_by_type(data, city_name,choice):
     current_hour = datetime.now().hour
     upcoming = []
+
+
+
+
 
     match choice:
         
@@ -161,26 +222,50 @@ def get_forecasts_by_type(data, city_name,choice):
                     upcoming.append({
                         "day": "Today",
                         "time": f"{hour_val:02d}:00",
-                        "temp": item["temp_C"],
-                        "desc": item["weatherDesc"][0]["value"]
+                        "temp": item["tempC"],
+                        "desc": item["weatherDesc"][0]["value"],
+                        "emoji": EMOJIS[get_weather_category(item["weatherDesc"][0]["value"])]
                     })
 
-            if len(upcoming) < 2:
+            if len(upcoming) < 3:
                 for item in data["weather"][1]["hourly"]:
                     hour_val = int(item["time"]) // 100
                     upcoming.append({
                         "day": "Tomorrow",
                         "time": f"{hour_val:02d}:00",
-                        "temp": item["temp_C"],
-                        "desc": item["weatherDesc"][0]["value"]
+                        "temp": item["tempC"],
+                        "desc": item["weatherDesc"][0]["value"],
+                        "emoji": EMOJIS[get_weather_category(item["weatherDesc"][0]["value"])] 
                     })
-                    if len(upcoming) >= 2:
+                    if len(upcoming) >= 3:
                         break
 
 
-            return upcoming[:2]
+            default_forecast_table = Table(
+            title=f"[bold #fabd2f]Upcoming weather in {city_name}[/bold #fabd2f]", 
+            box=box.ROUNDED,
+            show_header=False,
+            border_style="#928374"
+            )
+            default_forecast_table.add_column("Day", justify= "left", style="#a89984")
+            default_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
+            default_forecast_table.add_column("Weather", justify= "right", style="#fe8019")
+
+            upcoming_weather_dict_list =  upcoming[:3]
+            for x in upcoming_weather_dict_list:
+                default_forecast_table.add_row(
+                    x["day"], 
+                    x["time"], 
+                    f"""{x["emoji"]}, {x["temp"]}°C""")
+            return default_forecast_table
+
+
+            
         
 
+
+        
+        
         case "short":
                 current_temp = data["current_condition"][0]["temp_C"]
                 current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
@@ -223,7 +308,7 @@ def get_forecasts_by_type(data, city_name,choice):
                     upcoming.append({
                         "day": "Today",
                         "time": f"{hour_val:02d}:00",
-                        "temp": item["temp_C"],
+                        "temp": item["tempC"],
                         "desc": item["weatherDesc"][0]["value"]
                     })
             for item in data["weather"][1]["hourly"]:
@@ -231,7 +316,7 @@ def get_forecasts_by_type(data, city_name,choice):
                 upcoming.append({
                     "day": "Tomorrow",
                     "time": f"{hour_val:02d}:00",
-                    "temp": item["temp_C"],
+                    "temp": item["tempC"],
                     "desc": item["weatherDesc"][0]["value"]
                     })
                 if len(upcoming) == 8:
@@ -278,49 +363,10 @@ def greeting():
         add_city(search_for_city())
         time.sleep(1.1)
 
-    else:
-        console.print("[bold #928374]Choose a forecast display type[/]\n\n\n")
+    else: 
+        
+        console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
         time.sleep(0.5)
-
-    
-    choice_table = Table(
-    title=f"[bold #fabd2f]Types of forecast displays[/bold #fabd2f]", 
-    box=box.ROUNDED,
-    show_header=False,  
-    border_style="#928374"
-    )
-    choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
-    choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
-    choice_table.add_row("3. Detailed(the next 24 hours)", style= "bold #b8bb26")
-    console.print(choice_table)
-
-    working = True
-
-    global display_mode
-    
-    
-    while working:
-        choice = console.input("[bold #fabd2f]Enter a number(1-3)[/]")
-        #validation of choice
-        match choice:
-            case "1":
-                choice = "short"
-                working = False
-            case "2":
-                choice = "default"
-                working = False
-
-            case "3":
-                choice = "detailed"
-                working = False
-            case _:
-                continue
-
-        
-        
-        
-        #console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
-        #time.sleep(0.5)
 
 
 
