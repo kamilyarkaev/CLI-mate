@@ -8,14 +8,25 @@ from datetime import datetime
 from Ascii_arts import weather_arts
 import random
 
+global emojis_dict
 
 
 
 
-
-EMOJIS = {
+DAY_EMOJIS = {
     "sunny": "☀️",
-    "cloudy": "☁️",
+    "cloudy": "🌤️",
+    "foggy": "🌫️",
+    "rainy": "🌧️",
+    "snowy": "🌨️",
+    "sleet": "❄️",
+    "storm": "⛈️",
+    "windy": "💨"
+}
+
+NIGHT_EMOJIS = {
+    "sunny": "🌙",     
+    "cloudy": "☁️",      
     "foggy": "🌫️",
     "rainy": "🌧️",
     "snowy": "🌨️",
@@ -53,6 +64,20 @@ def data_base_reader_no_print():
 
 
 display_mode = "default"
+
+
+
+
+
+def determine_time_day_or_night(time):
+    pass
+
+
+
+
+
+
+
 
 
 def main_menu():
@@ -203,10 +228,43 @@ def get_weather_category(description):
 
 
 
+
+def determine_time_day_or_night(data, time):
+    
+    time_list = time.split(":")
+    hour, minutes = tuple(time_list)
+    forecast_minutes = int(hour)*60 + int(minutes)
+    
+    
+    sunrise_hours, sunrise_minutes = tuple(data["weather"][0]["astronomy"][0]["sunrise"].split()[0].split(":"))
+    sunset_hours, sunset_minutes = tuple(data["weather"][0]["astronomy"][0]["sunset"].split()[0].split(":"))
+
+    sunset_mins = int(sunset_hours)*60 + int(sunset_minutes) + 720
+    sunrise_mins = int(sunrise_hours)*60 + int(sunrise_minutes)
+    
+    is_night = (forecast_minutes < sunrise_mins) or (forecast_minutes > sunset_mins)
+    
+    
+    emojis_dict = NIGHT_EMOJIS if is_night else DAY_EMOJIS
+
+    return emojis_dict
+    
+    
+
+    
+
+
+
+
+
+
+
 def get_forecasts_by_type(data, city_name,choice):
     current_hour = datetime.now().hour
     upcoming = []
-
+    current_time = datetime.now().strftime("%H:%M")
+    
+    emojis_dict = determine_time_day_or_night(data, current_time)
 
 
 
@@ -214,8 +272,14 @@ def get_forecasts_by_type(data, city_name,choice):
     match choice:
         
         
+        
+        
+        
+                #determine_time_day_or_night(data, current_time)
+        
         case "default":
-    
+            current_time = datetime.now().strftime("%H:%M")
+            
             for item in data["weather"][0]["hourly"]:
                 hour_val = int(item["time"]) // 100  
                 if hour_val > current_hour:
@@ -223,24 +287,27 @@ def get_forecasts_by_type(data, city_name,choice):
                         "day": "Today",
                         "time": f"{hour_val:02d}:00",
                         "temp": item["tempC"],
-                        "desc": item["weatherDesc"][0]["value"],
-                        "emoji": EMOJIS[get_weather_category(item["weatherDesc"][0]["value"])]
+                        "desc": item["weatherDesc"][0]["value"]
                     })
 
-            if len(upcoming) < 3:
+            if len(upcoming) < 4:
                 for item in data["weather"][1]["hourly"]:
+                    
+                    
                     hour_val = int(item["time"]) // 100
                     upcoming.append({
                         "day": "Tomorrow",
                         "time": f"{hour_val:02d}:00",
                         "temp": item["tempC"],
-                        "desc": item["weatherDesc"][0]["value"],
-                        "emoji": EMOJIS[get_weather_category(item["weatherDesc"][0]["value"])] 
+                        "desc": item["weatherDesc"][0]["value"]
                     })
-                    if len(upcoming) >= 3:
+                    if len(upcoming) >= 4:
                         break
 
 
+            
+            
+            
             default_forecast_table = Table(
             title=f"[bold #fabd2f]Upcoming weather in {city_name}[/bold #fabd2f]", 
             box=box.ROUNDED,
@@ -251,22 +318,55 @@ def get_forecasts_by_type(data, city_name,choice):
             default_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
             default_forecast_table.add_column("Weather", justify= "right", style="#fe8019")
 
-            upcoming_weather_dict_list =  upcoming[:3]
+            
+            current_time = datetime.now().strftime("%H:%M")
+            
+            current_temp = data["current_condition"][0]["temp_C"]
+            current_desc = data["current_condition"][0]["weatherDesc"][0]["value"]
+            current_emoji = emojis_dict[get_weather_category(current_desc)]
+            
+            emojis_dict = determine_time_day_or_night(data, current_time)
+
+            current_emoji = emojis_dict[get_weather_category(current_desc)]
+            
+            
+            
+            
+            
+            tomorrow_midday_desc = data["weather"][1]["hourly"][4]["weatherDesc"][0]["value"]
+            default_forecast_table.add_row("Now",current_time,f"{current_desc},{current_emoji}, {current_temp}°C" )
+            
+            
+            hour_val_midday =int(data["weather"][1]["hourly"][4]["time"])//100
+            time_midday = f"{hour_val_midday:02d}:00"
+            
+            emojis_dict = determine_time_day_or_night(data, time_midday)
+            tomorrow_midday_emoji = emojis_dict[get_weather_category(tomorrow_midday_desc)]
+            upcoming_weather_dict_list =  upcoming[:4]
             for x in upcoming_weather_dict_list:
+                emojis_dict = determine_time_day_or_night(data, x["time"])
+                emoji = emojis_dict[get_weather_category(x["desc"])]
+                
                 default_forecast_table.add_row(
                     x["day"], 
                     x["time"], 
-                    f"""{x["emoji"]}, {x["temp"]}°C""")
+                    f"""{x["desc"]}, {emoji}, {x["temp"]}°C""")
+            default_forecast_table.add_row(f"Tomorrow midday",
+             f"{hour_val_midday:02d}:00",
+             f"""{tomorrow_midday_desc},{tomorrow_midday_emoji}, {data["weather"][1]["hourly"][4]['tempC']}°C""" )
+            
             return default_forecast_table
 
 
-            
-        
+
 
 
         
         
         case "short":
+                
+                current_time = datetime.now().strftime("%H:%M")
+                
                 current_temp = data["current_condition"][0]["temp_C"]
                 current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
 
@@ -294,14 +394,16 @@ def get_forecasts_by_type(data, city_name,choice):
                 weather_table.add_row(left_column, right_column)
                 
                 return weather_table
-        
 
-        
+
 
 
 
 
         case "detailed":
+            current_time = datetime.now().strftime("%H:%M")
+            
+            
             for item in data["weather"][0]["hourly"]:
                 hour_val = int(item["time"]) // 100  
                 if hour_val > current_hour:
@@ -309,7 +411,7 @@ def get_forecasts_by_type(data, city_name,choice):
                         "day": "Today",
                         "time": f"{hour_val:02d}:00",
                         "temp": item["tempC"],
-                        "desc": item["weatherDesc"][0]["value"]
+                        "desc": item["weatherDesc"][0]["value"],
                     })
             for item in data["weather"][1]["hourly"]:
                 hour_val = int(item["time"])//100
@@ -317,11 +419,49 @@ def get_forecasts_by_type(data, city_name,choice):
                     "day": "Tomorrow",
                     "time": f"{hour_val:02d}:00",
                     "temp": item["tempC"],
-                    "desc": item["weatherDesc"][0]["value"]
+                    "desc": item["weatherDesc"][0]["value"],
                     })
-                if len(upcoming) == 8:
+                if len(upcoming) == 14:
                     break
-            return upcoming
+            
+            detailed_forecast_table = Table(
+            title=f"[bold #fabd2f]Upcoming weather in {city_name}[/bold #fabd2f]", 
+            box=box.ROUNDED,
+            show_header=False,
+            border_style="#928374"
+            )
+            detailed_forecast_table.add_column("Day", justify= "left", style="#a89984")
+            detailed_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
+            detailed_forecast_table.add_column("Weather", justify= "right", style="#fe8019")
+
+            upcoming_weather_dict_list_detailed = upcoming
+
+            
+            current_time = datetime.now().strftime("%H:%M")
+            current_temp = data["current_condition"][0]["temp_C"]
+            current_desc = data["current_condition"][0]["weatherDesc"][0]["value"]
+            current_emoji = emojis_dict[get_weather_category(current_desc)]
+
+            detailed_forecast_table.add_row("Now",current_time,f"{current_desc},{current_emoji}, {current_temp}°C" )
+            
+            
+            
+            
+            for x in upcoming_weather_dict_list_detailed:
+                emojis_dict = determine_time_day_or_night(data, x["time"])
+                emoji = emojis_dict[get_weather_category(x["desc"])]
+                
+                
+                
+                detailed_forecast_table.add_row(
+                    x["day"], 
+                    x["time"], 
+                    f"""{x["desc"]}, {emoji}, {x["temp"]}°C""")
+            
+            
+            
+            
+            return detailed_forecast_table
 
 
 
