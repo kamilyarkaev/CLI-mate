@@ -287,6 +287,7 @@ def get_forecasts_by_type(data, city_name,choice):
         case "default":
             current_time = datetime.now().strftime("%H:%M")
             
+            
             for item in data["weather"][0]["hourly"]:
                 hour_val = int(item["time"]) // 100  
                 if hour_val > current_hour:
@@ -294,24 +295,95 @@ def get_forecasts_by_type(data, city_name,choice):
                         "day": "Today",
                         "time": f"{hour_val:02d}:00",
                         "temp": item["tempC"],
-                        "desc": item["weatherDesc"][0]["value"]
+                        "desc": item["weatherDesc"][0]["value"],
+                        "minutes": hour_val * 60,
+                        "type": "forecast"
                     })
-
-            if len(upcoming) < 4:
-                for item in data["weather"][1]["hourly"]:
-                    
-                    
-                    hour_val = int(item["time"]) // 100
-                    upcoming.append({
-                        "day": "Tomorrow",
-                        "time": f"{hour_val:02d}:00",
-                        "temp": item["tempC"],
-                        "desc": item["weatherDesc"][0]["value"]
+            for item in data["weather"][1]["hourly"]:
+                hour_val = int(item["time"])//100
+                upcoming.append({
+                    "day": "Tomorrow",
+                    "time": f"{hour_val:02d}:00",
+                    "temp": item["tempC"],
+                    "desc": item["weatherDesc"][0]["value"],
+                    "minutes": hour_val * 60 + 1440,
+                    "type": "forecast"
                     })
-                    if len(upcoming) >= 4:
-                        break
+                if len(upcoming) == 5:
+                    break
+            
+            
+            
+            events_list = []
+            for x in upcoming:
+                events_list.append(x)
 
 
+            current_hour, current_minutes = tuple(current_time.split(":"))
+            now_minutes = int(current_hour) * 60 + int(current_minutes)
+
+            events_list.append({
+                    "day": "Today",
+                    "time": current_time,
+                    "temp": None,
+                    "desc": None,
+                    "minutes": now_minutes,
+                    "type": "current_moment",
+                    })
+            
+            
+            
+            events_list.sort(key= lambda x: x["minutes"])
+            earliest_moment = events_list[0]["minutes"]
+            latest_moment = events_list[-1]["minutes"]
+            if earliest_moment < today_sunrise_mins and latest_moment > today_sunrise_mins:
+                events_list.append({
+                    "day": "Today",
+                    "time": data["weather"][0]["astronomy"][0]["sunrise"].split()[0],
+                    "temp": None,
+                    "desc": "sunrise",
+                    "minutes": today_sunrise_mins,
+                    "type": "sunrise",
+
+                    })
+            if earliest_moment < today_sunset_mins and latest_moment > today_sunset_mins:
+                events_list.append({
+                    "day": "Today",
+                    "time": data["weather"][0]["astronomy"][0]["sunset"].split()[0],
+                    "temp": None,
+                    "desc": "sunset",
+                    "minutes": today_sunset_mins,
+                    "type": "sunset",
+
+                    })
+            if earliest_moment < tomorrow_sunrise_mins and latest_moment > tomorrow_sunrise_mins:
+                events_list.append({
+                    "day": "Tomorrow",
+                    "time": data["weather"][1]["astronomy"][0]["sunrise"].split()[0],
+                    "temp": None,
+                    "desc": "sunrise",
+                    "minutes": tomorrow_sunrise_mins,
+                    "type": "sunrise",
+
+                    })
+            if earliest_moment < tomorrow_sunset_mins and latest_moment > tomorrow_sunset_mins:
+                events_list.append({
+                    "day": "Tomorrow",
+                    "time": data["weather"][1]["astronomy"][0]["sunset"].split()[0],
+                    "temp": None,
+                    "desc": "sunset",
+                    "minutes": tomorrow_sunset_mins,
+                    "type": "sunset",
+
+                    })
+            events_list.sort(key= lambda x: x["minutes"])
+
+
+
+            
+
+
+            
             
             
             
@@ -323,46 +395,59 @@ def get_forecasts_by_type(data, city_name,choice):
             )
             default_forecast_table.add_column("Day", justify= "left", style="#a89984")
             default_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
-            default_forecast_table.add_column("Weather", justify= "right", style="#fe8019")
+            default_forecast_table.add_column("Weather", justify= "right", style="#b8bb26")
+
+            upcoming_weather_dict_list_default = upcoming
 
             
             current_time = datetime.now().strftime("%H:%M")
-            
             current_temp = data["current_condition"][0]["temp_C"]
             current_desc = data["current_condition"][0]["weatherDesc"][0]["value"]
             current_emoji = emojis_dict[get_weather_category(current_desc)]
-            
-            emojis_dict = determine_time_day_or_night(data, current_time)
 
-            current_emoji = emojis_dict[get_weather_category(current_desc)]
-            
-            
-            
-            
-            
-            tomorrow_midday_desc = data["weather"][1]["hourly"][4]["weatherDesc"][0]["value"]
             default_forecast_table.add_row("Now",current_time,f"{current_desc},{current_emoji}, {current_temp}°C" )
             
             
-            hour_val_midday =int(data["weather"][1]["hourly"][4]["time"])//100
-            time_midday = f"{hour_val_midday:02d}:00"
             
-            emojis_dict = determine_time_day_or_night(data, time_midday)
-            tomorrow_midday_emoji = emojis_dict[get_weather_category(tomorrow_midday_desc)]
-            upcoming_weather_dict_list =  upcoming[:4]
-            for x in upcoming_weather_dict_list:
-                emojis_dict = determine_time_day_or_night(data, x["time"])
-                emoji = emojis_dict[get_weather_category(x["desc"])]
+            
+            for x in events_list:
                 
-                default_forecast_table.add_row(
-                    x["day"], 
-                    x["time"], 
-                    f"""{x["desc"]}, {emoji}, {x["temp"]}°C""")
-            default_forecast_table.add_row(f"Tomorrow midday",
-             f"{hour_val_midday:02d}:00",
-             f"""{tomorrow_midday_desc},{tomorrow_midday_emoji}, {data["weather"][1]["hourly"][4]['tempC']}°C""" )
+                
+                if x["type"] == "current_moment":
+                    continue
+                
+                
+                if x["type"] == "forecast": 
+                    emojis_dict = determine_time_day_or_night(data, x["time"])
+                    emoji = emojis_dict[get_weather_category(x["desc"])]
+                
+                
+                    default_forecast_table.add_row(
+                        x["day"], 
+                        x["time"], 
+                        f"""{x["desc"]}, {emoji}, {x["temp"]}°C""") 
+                    
+                if x["type"] == "sunrise":
+                    default_forecast_table.add_row(
+                        x["day"], 
+                        x["time"], 
+                        f"""[bold #fabd2f]Sunrise[/], 🌅""")
+                    
+                if x["type"] == "sunset":
+                    default_forecast_table.add_row(
+                        x["day"], 
+                        x["time"], 
+                        f"""[bold #fe8019]Sunset[/], 🌇""")
+                
+
             
-            return default_forecast_table
+            
+            
+            
+            return default_forecast_table            
+            
+            
+
 
 
 
@@ -472,7 +557,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < today_sunset_mins and latest_moment > today_sunset_mins:
                 events_list.append({
                     "day": "Today",
-                    "time": data["weather"][0]["astronomy"][0]["sunrise"].split()[0],
+                    "time": data["weather"][0]["astronomy"][0]["sunset"].split()[0],
                     "temp": None,
                     "desc": "sunset",
                     "minutes": today_sunset_mins,
@@ -492,7 +577,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < tomorrow_sunset_mins and latest_moment > tomorrow_sunset_mins:
                 events_list.append({
                     "day": "Tomorrow",
-                    "time": data["weather"][1]["astronomy"][0]["sunrise"].split()[0],
+                    "time": data["weather"][1]["astronomy"][0]["sunset"].split()[0],
                     "temp": None,
                     "desc": "sunset",
                     "minutes": tomorrow_sunset_mins,
@@ -518,7 +603,7 @@ def get_forecasts_by_type(data, city_name,choice):
             )
             detailed_forecast_table.add_column("Day", justify= "left", style="#a89984")
             detailed_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
-            detailed_forecast_table.add_column("Weather", justify= "right", style="#fe8019")
+            detailed_forecast_table.add_column("Weather", justify= "right", style="#b8bb26")
 
             upcoming_weather_dict_list_detailed = upcoming
 
@@ -534,8 +619,6 @@ def get_forecasts_by_type(data, city_name,choice):
             
             
             for x in events_list:
-                emojis_dict = determine_time_day_or_night(data, x["time"])
-                emoji = emojis_dict[get_weather_category(x["desc"])]
                 
                 
                 if x["type"] == "current_moment":
@@ -543,7 +626,8 @@ def get_forecasts_by_type(data, city_name,choice):
                 
                 
                 if x["type"] == "forecast": 
-
+                    emojis_dict = determine_time_day_or_night(data, x["time"])
+                    emoji = emojis_dict[get_weather_category(x["desc"])]
                 
                 
                     detailed_forecast_table.add_row(
@@ -551,17 +635,17 @@ def get_forecasts_by_type(data, city_name,choice):
                         x["time"], 
                         f"""{x["desc"]}, {emoji}, {x["temp"]}°C""") 
                     
-                if ["type"] == "sunrise":
+                if x["type"] == "sunrise":
                     detailed_forecast_table.add_row(
                         x["day"], 
                         x["time"], 
                         f"""[bold #fabd2f]Sunrise[/], 🌅""")
                     
-                if ["type"] == "sunset":
+                if x["type"] == "sunset":
                     detailed_forecast_table.add_row(
                         x["day"], 
                         x["time"], 
-                        f"""[bold orange]Sunset[/], 🌇""")
+                        f"""[bold #fe8019]Sunset[/], 🌇""")
                 
 
             
