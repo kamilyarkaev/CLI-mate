@@ -132,7 +132,11 @@ def main_menu():
 
             case "2":
                 console.print("\n\n[bold #fabd2f]Adding a New City[/]")
-                add_city(search_for_city())
+                new_city = search_for_city()
+
+                if new_city:
+                    add_city(new_city)
+                    console.print("[bold #b8bb26]City successfully added![/]")
 
             case "3":
                 if not db:
@@ -151,7 +155,7 @@ def main_menu():
                 )
                 choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
                 choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
-                choice_table.add_row("3. Deatiled(the next 24 hours)", style= "bold #b8bb26")
+                choice_table.add_row("3. Deatiled(the next 42 hours)", style= "bold #b8bb26")
                 
                 console.print(choice_table)
                 
@@ -312,9 +316,23 @@ def get_forecasts_by_type(data, city_name,choice):
                 if len(upcoming) == 5:
                     break
             
-            
-            
             events_list = []
+            
+
+            midday_forecast= data["weather"][1]["hourly"][4]
+
+
+            events_list.append({
+             "day": "Tomorrow",
+             "time": "12:00", 
+             "temp": midday_forecast["tempC"],
+             "desc": midday_forecast["weatherDesc"][0]["value"],
+             "minutes": 720 + 1440,
+             "type": "forecast"
+            })
+            
+            
+
             for x in upcoming:
                 events_list.append(x)
 
@@ -517,6 +535,18 @@ def get_forecasts_by_type(data, city_name,choice):
                     "minutes": hour_val * 60 + 1440,
                     "type": "forecast"
                     })
+            
+            for item in data["weather"][2]["hourly"]:
+                hour_val = int(item["time"])//100
+                upcoming.append({
+                    "day": "Day after tomorrow",
+                    "time": f"{hour_val:02d}:00",
+                    "temp": item["tempC"],
+                    "desc": item["weatherDesc"][0]["value"],
+                    "minutes": hour_val * 60 + 2880,
+                    "type": "forecast"
+                    })    
+            
                 if len(upcoming) == 14:
                     break
             
@@ -703,43 +733,72 @@ def greeting():
 
 
 def add_city(city):
-    database = data_base_reader_no_print()
     
     
-    database[city["City"]] = {
-    "Country": city["Country"],
-    "latitude": city["latitude"],
-    "longitude": city["longitude"]
-    }
-    
-    
-    with open("data_base.json", "w", encoding="utf-8") as file:
-    
-        json.dump(database, file, ensure_ascii=False, indent=4)
+        database = data_base_reader_no_print()
+        
+        
+        database[city["City"]] = {
+        "Country": city["Country"],
+        "latitude": city["latitude"],
+        "longitude": city["longitude"]
+        }
+        
+        
+        with open("data_base.json", "w", encoding="utf-8") as file:
+        
+            json.dump(database, file, ensure_ascii=False, indent=4)
+
+        return None
 
 
 def search_for_city():
 
     url = "https://geocoding-api.open-meteo.com/v1/search"
     working = True
-    
+    work = True
+    f = True
     while working:
         try:
             
-            city = console.input("[bold #b8bb26]Enter your city's name: [/]")
-            
-            payload = {
-                "name": city 
-                }   
-            response = requests.get(url,params = payload)
-            data = response.json()
-            latitude = data["results"][0]["latitude"]
-            longitude = data["results"][0]["longitude"]
-            country = data["results"][0]["country"]
-            name = data["results"][0]["name"]
+            while work:
+                city = console.input("[bold #b8bb26]Enter your city's name: [/]")
 
-            console.print(f"[bold #928374]City:[/][bold #fabd2f]{name}[/], [bold #928374]Country:[/][bold #b8bb26]{country}[/]", highlight= False)
-            console.print(f"[bold #928374]Latitude:[/][bold #fe8019]{latitude}[/], [bold #928374]Longitude:[/][bold #83a598]{longitude}[/]\n",highlight= False)
+                payload = {
+                    "name": city 
+                    }   
+                response = requests.get(url,params = payload)
+                data = response.json()
+            
+            
+            
+            
+            
+                latitude = data["results"][0]["latitude"]
+                longitude = data["results"][0]["longitude"]
+                country = data["results"][0]["country"]
+                name = data["results"][0]["name"]
+
+                console.print(f"[bold #928374]City:[/][bold #fabd2f]{name}[/], [bold #928374]Country:[/][bold #b8bb26]{country}[/]", highlight= False)
+                console.print(f"[bold #928374]Latitude:[/][bold #fe8019]{latitude}[/], [bold #928374]Longitude:[/][bold #83a598]{longitude}[/]\n",highlight= False)
+                while f:
+                    x = console.input(f"[bold #b8bb26]Is this the right place? [Y/n]? (e) to leave: [/]").strip().lower()
+                    match x:
+                        case "y" | "yes":
+                            work = False
+                            f = False
+
+                        case "n" | "no":
+                            break
+                        case "e" | "leave":
+                            work = False
+                            f = False
+                            return None
+
+
+
+                    
+
             console.rule(style="bold #928374")
             dict = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
