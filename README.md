@@ -1,6 +1,6 @@
 # CLI-Mate
 
-CLI-mate is a high-accuracy, lightweight command-line weather forecast utility styled with the eye-pleasing Gruvbox color palette. It features a local JSON database for city caching, automatic day/night emoji rendering based on real-time astronomical sunrise/sunset calculations, and three customizable display modes.
+CLI-mate is a high-accuracy, lightweight command-line weather forecast utility styled with Gruvbox color palette. It features a local JSON database for city caching, automatic day/night emoji rendering based on real-time sunrise/sunset calculations, and three display modes.
 
 ---
 
@@ -8,7 +8,7 @@ CLI-mate is a high-accuracy, lightweight command-line weather forecast utility s
 
 - **Local Database Caching (`data_base.json`):** Saves your cities and their coordinates so you can query them instantly.
 - **Dynamic Day/Night Emoji Cycle:** Automatically determines if it is day or night at the forecast time using local sunrise/sunset values, switching between sun ☀️ and moon 🌙 icons.
-- **Chronological Timeline Sorting:** Seamlessly merges and sorts weather forecasts, sunrise, and sunset times in absolute chronological order.
+- **Chronological Timeline Sorting:** Seamlessly merges and sorts weather forecasts, sunrise, and sunset times in chronological order.
 - **Three Display Modes:**
   - **Short:** Just the current temperature, weather conditions, and a custom weather ASCII art.
   - **Default:** Current weather plus upcoming 3-hour interval forecasts and tomorrow's midday outlook.
@@ -20,7 +20,7 @@ CLI-mate is a high-accuracy, lightweight command-line weather forecast utility s
 
 The application is written in Python 3 and utilizes the following libraries:
 
-- **`requests`**: For making fast, synchronous HTTP requests to the `wttr.in` and `Open-Meteo` meteorological APIs.
+- **`requests`**: For making HTTP requests to the `wttr.in` and `Open-Meteo` meteorological APIs.
 - **`rich`**: For building beautiful, color-coded tables, borders, and styled CLI layouts using terminal markup.
 - **`datetime`** (Standard Library): For manipulating time, calculating time deltas, and managing timezone-specific formats.
 - **`random`** (Standard Library): For choosing random, styled ASCII arts for weather conditions.
@@ -80,63 +80,6 @@ python3 main.py
 - `Functions.py`: Contains the core logic, API request handling, chronological sorting, and table rendering.
 - `Ascii_arts.py`: Houses the pre-escaped, monospace-safe, and color-coded ASCII weather icons.
 - `data_base.json`: Your local database used to store saved cities and coordinates.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
