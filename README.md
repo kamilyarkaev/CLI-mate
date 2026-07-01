@@ -66,6 +66,12 @@ The forecast display mode is set to default ON default
 
 Rn I am fixing bugged display of ASCII arts, it's all going to be finished by this evening
 
+>**From June 30th 23:20 2026     30.06.2026**.
+
+Now alongside temperature in any forecast display mode you can see the time of sunrises and sunsets if they ofc are within the forecast
+
+Tomorrow I will work with pyinstaller to make this a 1 file program
+
 
 
 
