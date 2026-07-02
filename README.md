@@ -163,6 +163,9 @@ Now alongside temperature in any forecast display mode you can see the time of s
 
 Tomorrow I will work with pyinstaller to make this a 1 file program
 
+>**From July 2nd 21:52 2026     02.07.2026**.
+
+I did not work on CLI-Mate today because I am swamped with my homework right now, sorry if anyone cares
 
 
 
