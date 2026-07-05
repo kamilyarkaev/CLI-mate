@@ -241,25 +241,38 @@ def determine_time_day_or_night(data, time):
     hour, minutes = tuple(time_list)
     forecast_minutes = int(hour)*60 + int(minutes)
     
-    global today_sunrise_mins, today_sunset_mins, tomorrow_sunrise_mins, tomorrow_sunset_mins, tomorrow_sunset_true_time, tomorrow_sunrise_true_time, today_sunrise_true_time, today_sunset_true_time
+    global day_after_tomorrow_sunrise_true_time, day_after_tomorrow_sunset_true_time, day_after_tomorrow_sunrise_mins, day_after_tomorrow_sunset_mins, day_after_tomorrow_sunrise_hours, day_after_tomorrow_sunrise_minutes, day_after_tomorrow_sunset_hours, day_after_tomorrow_sunset_minutes, today_sunrise_mins, today_sunset_mins, tomorrow_sunrise_mins, tomorrow_sunset_mins, tomorrow_sunset_true_time, tomorrow_sunrise_true_time, today_sunrise_true_time, today_sunset_true_time
 
     sunrise_hours, sunrise_minutes = tuple(data["weather"][0]["astronomy"][0]["sunrise"].split()[0].split(":"))
     sunset_hours, sunset_minutes = tuple(data["weather"][0]["astronomy"][0]["sunset"].split()[0].split(":"))
 
-    today_sunset_mins = int(sunset_hours)*60 + int(sunset_minutes) + 720
-    today_sunrise_mins = int(sunrise_hours)*60 + int(sunrise_minutes)
     
     tomorrow_sunrise_hours, tomorrow_sunrise_minutes = tuple(data["weather"][1]["astronomy"][0]["sunrise"].split()[0].split(":"))
     tomorrow_sunset_hours, tomorrow_sunset_minutes = tuple(data["weather"][1]["astronomy"][0]["sunset"].split()[0].split(":"))
 
+    day_after_tomorrow_sunset_hours, day_after_tomorrow_sunset_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunset"].split()[0].split(":"))
+    day_after_tomorrow_sunrise_hours, day_after_tomorrow_sunrise_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunrise"].split()[0].split(":"))
+    
+
+    today_sunset_mins = int(sunset_hours)*60 + int(sunset_minutes) + 720
+    today_sunrise_mins = int(sunrise_hours)*60 + int(sunrise_minutes)   
+    
     tomorrow_sunset_mins = int(tomorrow_sunset_hours)*60 + int(tomorrow_sunset_minutes) + 720 + 1440
     tomorrow_sunrise_mins = int(tomorrow_sunrise_hours)*60 + int(tomorrow_sunrise_minutes) + 1440
+    
     tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes):02d}"
     tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes):02d}"
+    
     today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes):02d}"
     today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes):02d}"
     
+    day_after_tomorrow_sunset_mins = int(day_after_tomorrow_sunset_hours)*60 + int(day_after_tomorrow_sunset_minutes) + 720 + 2880
+    day_after_tomorrow_sunrise_mins = int(day_after_tomorrow_sunrise_hours)*60 + int(day_after_tomorrow_sunrise_minutes) + 2880
     
+    day_after_tomorrow_sunrise_true_time = f"{int(day_after_tomorrow_sunrise_hours):02d}:{int(day_after_tomorrow_sunrise_minutes):02d}"
+    day_after_tomorrow_sunset_true_time = f"{int(day_after_tomorrow_sunset_hours):02d}:{int(day_after_tomorrow_sunset_minutes):02d}"
+   
+   
     is_night = (forecast_minutes < today_sunrise_mins) or (forecast_minutes > today_sunset_mins)
     
     
@@ -322,18 +335,18 @@ def get_forecasts_by_type(data, city_name,choice):
             
             events_list = []
             
+            if int(upcoming[-1]["time"].split()[0].split(":")[0]) < 12:
+                midday_forecast= data["weather"][1]["hourly"][4]
 
-            midday_forecast= data["weather"][1]["hourly"][4]
 
-
-            events_list.append({
-             "day": "Tomorrow",
-             "time": "12:00", 
-             "temp": midday_forecast["tempC"],
-             "desc": midday_forecast["weatherDesc"][0]["value"],
-             "minutes": 720 + 1440,
-             "type": "forecast"
-            })
+                events_list.append({
+                 "day": "Tomorrow",
+                 "time": "12:00", 
+                 "temp": midday_forecast["tempC"],
+                 "desc": midday_forecast["weatherDesc"][0]["value"],
+                 "minutes": 720 + 1440,
+                 "type": "forecast"
+                })
             
             
 
@@ -618,6 +631,30 @@ def get_forecasts_by_type(data, city_name,choice):
                     "type": "sunset",
 
                     })
+            
+            if earliest_moment < day_after_tomorrow_sunset_mins and latest_moment > day_after_tomorrow_sunset_mins:
+                events_list.append({
+                    "day": "Day after tomorrow",
+                    "time": day_after_tomorrow_sunset_true_time,
+                    "temp": None,
+                    "desc": "sunset",
+                    "minutes": day_after_tomorrow_sunset_mins,
+                    "type": "sunset",
+
+                    })
+            
+            if earliest_moment < day_after_tomorrow_sunrise_mins and latest_moment > day_after_tomorrow_sunrise_mins:
+                events_list.append({
+                    "day": "Day after tomorrow",
+                    "time": day_after_tomorrow_sunrise_true_time,
+                    "temp": None,
+                    "desc": "sunrise",
+                    "minutes": day_after_tomorrow_sunrise_mins,
+                    "type": "sunrise",
+
+                    })
+            
+            
             events_list.sort(key= lambda x: x["minutes"])
 
 
