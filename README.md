@@ -1,5 +1,96 @@
 # CLI-Mate
 
+CLI-mate is a high-accuracy, lightweight command-line weather forecast utility styled with Gruvbox color palette. It features a local JSON database for city caching, automatic day/night emoji rendering based on real-time sunrise/sunset calculations, and three display modes.
+
+---
+
+## Features
+
+- **Local Database Caching (`data_base.json`):** Saves your cities and their coordinates so you can query them instantly.
+- **Dynamic Day/Night Emoji Cycle:** Automatically determines if it is day or night at the forecast time using local sunrise/sunset values, switching between sun ☀️ and moon 🌙 icons.
+- **Chronological Timeline Sorting:** Seamlessly merges and sorts weather forecasts, sunrise, and sunset times in chronological order.
+- **Three Display Modes:**
+  - **Short:** Just the current temperature, weather conditions, and a custom weather ASCII art.
+  - **Default:** Current weather plus upcoming 3-hour interval forecasts and tomorrow's midday outlook.
+  - **Detailed:** Comprehensive, scroll-safe 42-hour vertical forecast timeline.
+
+---
+
+## Libraries Used (Dependencies)
+
+The application is written in Python 3 and utilizes the following libraries:
+
+- **`requests`**: For making HTTP requests to the `wttr.in` and `Open-Meteo` meteorological APIs.
+- **`rich`**: For building beautiful, color-coded tables, borders, and styled CLI layouts using terminal markup.
+- **`datetime`** (Standard Library): For manipulating time, calculating time deltas, and managing timezone-specific formats.
+- **`random`** (Standard Library): For choosing random, styled ASCII arts for weather conditions.
+- **`json`** (Standard Library): For reading and writing structured data to the local database file.
+
+---
+
+
+
+
+## Installation and Setup
+
+To run CLI-mate locally on your machine, follow these steps:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/kamilyarkaev/CLI-mate.git
+cd CLI-mate
+```
+
+### 2. Set Up a Virtual Environment (Recommended)
+Create and activate an isolated virtual environment to prevent package conflicts with your system Python:
+
+On Linux/macOS:
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+On Windows (Command Prompt):
+```cmd
+python -m venv venv
+venv\Scripts\activate
+```
+
+### 3. Install the Dependencies
+Install the required external libraries inside your active virtual environment:
+```bash
+pip install requests rich
+```
+
+---
+
+## How to Run the App
+
+With your virtual environment active, run the entry point of the application:
+
+```bash
+python3 main.py
+```
+
+---
+
+## Project Structure
+
+- `main.py`: The main executable entry point that starts the program loop.
+- `Functions.py`: Contains the core logic, API request handling, chronological sorting, and table rendering.
+- `Ascii_arts.py`: Houses the pre-escaped, monospace-safe, and color-coded ASCII weather icons.
+- `data_base.json`: Your local database used to store saved cities and coordinates.
+
+
+
+
+
+
+
+
+## Development journal
+
+
 > **From: June 21st 21:33 2026      21.06.2026**.
 
 It's still raw
@@ -72,6 +163,9 @@ Now alongside temperature in any forecast display mode you can see the time of s
 
 Tomorrow I will work with pyinstaller to make this a 1 file program
 
+>**From July 2nd 21:52 2026     02.07.2026**.
+
+I did not work on CLI-Mate today because I am swamped with my homework right now, sorry if anyone cares
 
 
 
