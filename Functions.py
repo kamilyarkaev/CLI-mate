@@ -124,9 +124,9 @@ def main_menu():
                     selected_city = choose_an_option()
                     lat = db[selected_city]["latitude"]
                     lon = db[selected_city]["longitude"]
-                    data, city = tuple(get_weather(selected_city, lat, lon))
-                    if data:
-                        
+                    weather_request_results = tuple(get_weather(selected_city, lat, lon))
+                    if weather_request_results:
+                        data, city = weather_request_results
                         table_to_print = get_forecasts_by_type(data, city, display_mode)
                         console.print(table_to_print)
 
@@ -965,6 +965,6 @@ def get_weather(city_name, lat, lon):
             print("500-599  Server Error. The problem is on THEIR side (the website/API is broken).")
             
             
-    except:
-        print("Something went wrong, idk what")
+    except Exception as e:
+        print(f"Connection error :{e}")
 
