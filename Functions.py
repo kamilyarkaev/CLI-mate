@@ -124,7 +124,7 @@ def main_menu():
                     selected_city = choose_an_option()
                     lat = db[selected_city]["latitude"]
                     lon = db[selected_city]["longitude"]
-                    data, city = get_weather(selected_city, lat, lon)
+                    data, city = tuple(get_weather(selected_city, lat, lon))
                     if data:
                         
                         table_to_print = get_forecasts_by_type(data, city, display_mode)
