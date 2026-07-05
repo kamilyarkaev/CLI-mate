@@ -937,7 +937,7 @@ def get_weather(city_name, lat, lon):
         }
         
         
-        response = requests.get(url, parameters)
+        response = requests.get(url, parameters, timeout= 5)
 
         if response.status_code == 200:
             console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
@@ -966,5 +966,5 @@ def get_weather(city_name, lat, lon):
             
             
     except Exception as e:
-        print(f"Connection error :{e}")
+        print(f"Connection error: {e}")
 
