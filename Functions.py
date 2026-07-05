@@ -95,6 +95,7 @@ def main_menu():
 
 
         show_menu_box = False
+        time.sleep(0.5)
         choice = console.input("[bold #fabd2f]You are in menu, choose an option (1-6) or type 'm' to show menu or clear to clear: [/]").strip().lower()
         
         match choice:
@@ -204,6 +205,7 @@ def main_menu():
 
             case _:
                 console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
+                time.sleep(0.5)
 
 
 
@@ -239,7 +241,7 @@ def determine_time_day_or_night(data, time):
     hour, minutes = tuple(time_list)
     forecast_minutes = int(hour)*60 + int(minutes)
     
-    global today_sunrise_mins, today_sunset_mins, tomorrow_sunrise_mins, tomorrow_sunset_mins
+    global today_sunrise_mins, today_sunset_mins, tomorrow_sunrise_mins, tomorrow_sunset_mins, tomorrow_sunset_true_time, tomorrow_sunrise_true_time, today_sunrise_true_time, today_sunset_true_time
 
     sunrise_hours, sunrise_minutes = tuple(data["weather"][0]["astronomy"][0]["sunrise"].split()[0].split(":"))
     sunset_hours, sunset_minutes = tuple(data["weather"][0]["astronomy"][0]["sunset"].split()[0].split(":"))
@@ -252,7 +254,10 @@ def determine_time_day_or_night(data, time):
 
     tomorrow_sunset_mins = int(tomorrow_sunset_hours)*60 + int(tomorrow_sunset_minutes) + 720 + 1440
     tomorrow_sunrise_mins = int(tomorrow_sunrise_hours)*60 + int(tomorrow_sunrise_minutes) + 1440
-    
+    tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes)}"
+    tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes)}"
+    today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes)}"
+    today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes)}"
     
     
     is_night = (forecast_minutes < today_sunrise_mins) or (forecast_minutes > today_sunset_mins)
@@ -262,9 +267,8 @@ def determine_time_day_or_night(data, time):
 
     return emojis_dict
     
-    
 
-    
+
 
 
 
@@ -357,7 +361,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < today_sunrise_mins and latest_moment > today_sunrise_mins:
                 events_list.append({
                     "day": "Today",
-                    "time": data["weather"][0]["astronomy"][0]["sunrise"].split()[0],
+                    "time": today_sunrise_true_time,
                     "temp": None,
                     "desc": "sunrise",
                     "minutes": today_sunrise_mins,
@@ -367,7 +371,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < today_sunset_mins and latest_moment > today_sunset_mins:
                 events_list.append({
                     "day": "Today",
-                    "time": data["weather"][0]["astronomy"][0]["sunset"].split()[0],
+                    "time": today_sunset_true_time,
                     "temp": None,
                     "desc": "sunset",
                     "minutes": today_sunset_mins,
@@ -377,7 +381,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < tomorrow_sunrise_mins and latest_moment > tomorrow_sunrise_mins:
                 events_list.append({
                     "day": "Tomorrow",
-                    "time": data["weather"][1]["astronomy"][0]["sunrise"].split()[0],
+                    "time": tomorrow_sunrise_true_time,
                     "temp": None,
                     "desc": "sunrise",
                     "minutes": tomorrow_sunrise_mins,
@@ -387,7 +391,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < tomorrow_sunset_mins and latest_moment > tomorrow_sunset_mins:
                 events_list.append({
                     "day": "Tomorrow",
-                    "time": data["weather"][1]["astronomy"][0]["sunset"].split()[0],
+                    "time": tomorrow_sunset_true_time,
                     "temp": None,
                     "desc": "sunset",
                     "minutes": tomorrow_sunset_mins,
@@ -577,7 +581,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < today_sunrise_mins and latest_moment > today_sunrise_mins:
                 events_list.append({
                     "day": "Today",
-                    "time": data["weather"][0]["astronomy"][0]["sunrise"].split()[0],
+                    "time": today_sunrise_true_time,
                     "temp": None,
                     "desc": "sunrise",
                     "minutes": today_sunrise_mins,
@@ -587,7 +591,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < today_sunset_mins and latest_moment > today_sunset_mins:
                 events_list.append({
                     "day": "Today",
-                    "time": data["weather"][0]["astronomy"][0]["sunset"].split()[0],
+                    "time": today_sunset_true_time,
                     "temp": None,
                     "desc": "sunset",
                     "minutes": today_sunset_mins,
@@ -597,7 +601,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < tomorrow_sunrise_mins and latest_moment > tomorrow_sunrise_mins:
                 events_list.append({
                     "day": "Tomorrow",
-                    "time": data["weather"][1]["astronomy"][0]["sunrise"].split()[0],
+                    "time": tomorrow_sunrise_true_time,
                     "temp": None,
                     "desc": "sunrise",
                     "minutes": tomorrow_sunrise_mins,
@@ -607,7 +611,7 @@ def get_forecasts_by_type(data, city_name,choice):
             if earliest_moment < tomorrow_sunset_mins and latest_moment > tomorrow_sunset_mins:
                 events_list.append({
                     "day": "Tomorrow",
-                    "time": data["weather"][1]["astronomy"][0]["sunset"].split()[0],
+                    "time": tomorrow_sunset_true_time,
                     "temp": None,
                     "desc": "sunset",
                     "minutes": tomorrow_sunset_mins,
