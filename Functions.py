@@ -254,10 +254,10 @@ def determine_time_day_or_night(data, time):
 
     tomorrow_sunset_mins = int(tomorrow_sunset_hours)*60 + int(tomorrow_sunset_minutes) + 720 + 1440
     tomorrow_sunrise_mins = int(tomorrow_sunrise_hours)*60 + int(tomorrow_sunrise_minutes) + 1440
-    tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes)}"
-    tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes)}"
-    today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes)}"
-    today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes)}"
+    tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes):02d}"
+    tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes):02d}"
+    today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes):02d}"
+    today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes):02d}"
     
     
     is_night = (forecast_minutes < today_sunrise_mins) or (forecast_minutes > today_sunset_mins)
