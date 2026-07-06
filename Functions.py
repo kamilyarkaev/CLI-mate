@@ -69,13 +69,6 @@ display_mode = "default"
 
 
 
-def determine_time_day_or_night(time):
-    pass
-
-
-
-
-
 
 
 
@@ -199,7 +192,7 @@ def main_menu():
 
 
             case "5":
-                print("\n[WIP] The coordinate explainer is coming tomorrow!")
+                explain_why_coordinates()
 
 
 
@@ -209,6 +202,26 @@ def main_menu():
 
 
 
+
+
+def explain_why_coordinates():
+    explanation_text = (
+        "\n[bold #fabd2f]Why does CLI-Mate use coordinates?[/]\n\n"
+        "[bold #928374]CLI-Mate uses geographic coordinates (Latitude & Longitude) [/]"
+        "[bold #928374]for one specific reason:[/]\n\n"
+        
+        "[bold #fe8019]Backup Weather Provider (Open-Meteo)[/]\n"
+        "[bold #928374]Our primary weather source is[/] [bold #b8bb26]wttr.in[/][bold #928374], which we query directly using your city's name.[/] "
+        "[bold #928374]However, if [/][bold #b8bb26]wttr.in [/][bold #928374]is down or unresponsive,[/][bold #b8bb26] CLI-Mate [/][bold #928374]automatically switches to our backup[/] "
+        "[bold #928374]provider,[/] [bold #fe8019]Open-Meteo[/] [bold #928374](which runs in a simplified, non-colorized mode).[/]\n\n"
+        
+        "[bold #928374]Unlike[/] [bold #b8bb26]wttr.in[/][bold #928374],[/][bold #fe8019] Open-Meteo [/][bold #928374]cannot[/] [bold #b8bb26]search for weather by city names, it strictly requires[/] "
+        "[bold #928374]precise[/][bold #b8bb26] latitude and longitude coordinates[/][bold #928374]. Saving these coordinates in data_base.json[/] "
+        "[bold #928374]when you first add a city ensures that our backup weather request works instantly and[/] "
+        "[bold #928374]reliably whenever the [/][bold #b8bb26]primary website is unavailable![/]\n"
+    )
+    console.print(explanation_text)
+    console.rule(style="bold #928374")
 
 
 
