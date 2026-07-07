@@ -167,5 +167,9 @@ Tomorrow I will work with pyinstaller to make this a 1 file program
 
 I did not work on CLI-Mate today because I am swamped with my homework right now, sorry if anyone cares
 
+>**From July 5th,6th,7th 21:30 2026    07.07.2026**.
+
+Fixing minor problems and adding slightly more flexible functional, rn I am working on making a deb package out of all this
+
 
 
