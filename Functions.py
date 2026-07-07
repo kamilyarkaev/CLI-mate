@@ -10,6 +10,9 @@ import random
 
 global emojis_dict
 
+
+
+
 console = Console()
 
 
@@ -74,129 +77,133 @@ display_mode = "default"
 def main_menu():
     global display_mode
     
+    if do_a_break == True:
+        console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
+        return None
     
-    show_menu_box = True
-    while True:
-        
-        db = data_base_reader_no_print()
-        
-        if show_menu_box:
-            console.clear()
-            console.print(menu_table)
-
-
-        show_menu_box = False
-        time.sleep(0.5)
-        choice = console.input("[bold #fabd2f]You are in menu, choose an option (1-6) or type 'm' to show menu or clear to clear: [/]").strip().lower()
-        
-        match choice:
+    else:
+        show_menu_box = True
+        while True:
             
-            case "exit" | "6":
-                console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
-                break
+            db = data_base_reader_no_print()
             
-            
-            
-            case "m":
-                show_menu_box = True
-                continue
-        
-            
-            case "clear":
+            if show_menu_box:
                 console.clear()
-                continue
+                console.print(menu_table)
 
 
-
-            case "1":
-                if not db:
-                    console.print("\n[bold red]Your database is empty! Please add a city first (Option 2)[/bold red].")
-                else:
-                    selected_city = choose_an_option()
-                    lat = db[selected_city]["latitude"]
-                    lon = db[selected_city]["longitude"]
-                    weather_request_results = tuple(get_weather(selected_city, lat, lon))
-                    if weather_request_results:
-                        data, city = weather_request_results
-                        table_to_print = get_forecasts_by_type(data, city, display_mode)
-                        console.print(table_to_print)
-
-
-            case "2":
-                console.print("\n\n[bold #fabd2f]Adding a New City[/]")
-                new_city = search_for_city()
-
-                if new_city:
-                    add_city(new_city)
-                    console.print("[bold #b8bb26]City successfully added![/]")
-
-            case "3":
-                if not db:
-                    print("\nYour database is empty!")
-                else:
-                    console.print(saves_cities_and_coords())
-
-            case "4":
-                global choice_table
+            show_menu_box = False
+            time.sleep(0.5)
+            choice = console.input("[bold #fabd2f]You are in menu, choose an option (1-6) or type 'm' to show menu or clear to clear: [/]").strip().lower()
+            
+            match choice:
                 
-                choice_table = Table(
-                title=f"[bold #fabd2f]Types of forecast displays,[/] [bold #b8bb26]current: {display_mode}[/]", 
-                box=box.ROUNDED,
-                show_header=False,  
-                border_style="#928374"
-                )
-                choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
-                choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
-                choice_table.add_row("3. Deatiled(the next 42 hours)", style= "bold #b8bb26")
+                case "exit" | "6":
+                    console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
+                    break
                 
-                console.print(choice_table)
                 
+                
+                case "m":
+                    show_menu_box = True
+                    continue
+            
+                
+                case "clear":
+                    console.clear()
+                    continue
 
-                
-                display_mode_choice = True
-                while display_mode_choice:
-                    choice = console.input("[bold #fabd2f]Enter a number(1-3) or e to leave: [/]").strip().lower()
+
+
+                case "1":
+                    if not db:
+                        console.print("\n[bold red]Your database is empty! Please add a city first (Option 2)[/bold red].")
+                    else:
+                        selected_city = choose_an_option()
+                        lat = db[selected_city]["latitude"]
+                        lon = db[selected_city]["longitude"]
+                        weather_request_results = tuple(get_weather(selected_city, lat, lon))
+                        if weather_request_results:
+                            data, city = weather_request_results
+                            table_to_print = get_forecasts_by_type(data, city, display_mode)
+                            console.print(table_to_print)
+
+
+                case "2":
+                    console.print("\n\n[bold #fabd2f]Adding a New City[/]")
+                    new_city = search_for_city()
+
+                    if new_city:
+                        add_city(new_city)
+                        console.print("[bold #b8bb26]City successfully added![/]")
+
+                case "3":
+                    if not db:
+                        print("\nYour database is empty!")
+                    else:
+                        console.print(saves_cities_and_coords())
+
+                case "4":
+                    global choice_table
                     
-                    match choice:
-                        case "e":
-                            break
-                        
-                        
-                        case "1" | "short":
-                            display_mode = "short"
-                            display_mode_choice = False
-                            console.print("[bold #b8bb26]Set to short[/]")
-
-
-                        
-                        
-                        case "2" | "default":
-                            display_mode = "default"
-                            display_mode_choice = False
-                            console.print("[bold #b8bb26]Set to default[/]")                    
-                        
-                        
-                        
-                        case "3" | "detailed":
-                            display_mode = "detailed" 
-                            display_mode_choice = False
-                            console.print("[bold #b8bb26]Set to detailed[/]")                        
-                        case _:
-                            console.print(f"[bold red]Enter a number (1-3)[/]")
-
-
+                    choice_table = Table(
+                    title=f"[bold #fabd2f]Types of forecast displays,[/] [bold #b8bb26]current: {display_mode}[/]", 
+                    box=box.ROUNDED,
+                    show_header=False,  
+                    border_style="#928374"
+                    )
+                    choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
+                    choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
+                    choice_table.add_row("3. Deatiled(the next 42 hours)", style= "bold #b8bb26")
+                    
+                    console.print(choice_table)
                     
 
+                    
+                    display_mode_choice = True
+                    while display_mode_choice:
+                        choice = console.input("[bold #fabd2f]Enter a number(1-3) or e to leave: [/]").strip().lower()
+                        
+                        match choice:
+                            case "e":
+                                break
+                            
+                            
+                            case "1" | "short":
+                                display_mode = "short"
+                                display_mode_choice = False
+                                console.print("[bold #b8bb26]Set to short[/]")
 
 
-            case "5":
-                explain_why_coordinates()
+                            
+                            
+                            case "2" | "default":
+                                display_mode = "default"
+                                display_mode_choice = False
+                                console.print("[bold #b8bb26]Set to default[/]")                    
+                            
+                            
+                            
+                            case "3" | "detailed":
+                                display_mode = "detailed" 
+                                display_mode_choice = False
+                                console.print("[bold #b8bb26]Set to detailed[/]")                        
+                            case _:
+                                console.print(f"[bold red]Enter a number (1-3)[/]")
+
+
+                        
 
 
 
-            case _:
-                console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
-                time.sleep(0.5)
+                case "5":
+                    explain_why_coordinates()
+
+
+
+                case _:
+                    console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
+                    time.sleep(0.5)
 
 
 
@@ -773,11 +780,14 @@ def greeting():
     console.print("[bold #fabd2f]Hello, this is a CLI forecast program, or CLI-Mate[/]")
     length = len(data_base_reader_no_print())
     if length < 1:
-        add_city(search_for_city())
-        time.sleep(1.1)
-
+        new_city = search_for_city()
+        if new_city:
+            add_city(new_city)
+        else:
+            global do_a_break
+            do_a_break = True
     else: 
-        
+        do_a_break = False
         console.print("[bold #928374]Redirecting to main menu[/]\n\n\n")
         time.sleep(0.5)
 
@@ -816,6 +826,7 @@ def search_for_city():
             while work:
                 city = console.input("""[bold #b8bb26]Enter your city's name or 'e' to leave: [/]""").strip().lower()
                 if city == "e" or city == "leave":
+                        
                     work = False
                     working = False
                     return None
