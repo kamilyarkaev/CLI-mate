@@ -10,7 +10,7 @@ import random
 
 global emojis_dict
 
-
+console = Console()
 
 
 DAY_EMOJIS = {
@@ -40,8 +40,6 @@ NIGHT_EMOJIS = {
 
 
 
-
-console = Console()
 menu_table = Table(
     title="[bold #fabd2f]CLI-Mate Menu[/bold #fabd2f]", 
     box=box.ROUNDED,
@@ -52,7 +50,7 @@ menu_table.add_row("  1. Get weather for a saved city", style= "bold #b8bb26")
 menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
 menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
 menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
-menu_table.add_row("  5. Why does this app use coordinates? (WIP)", style= "bold #b8bb26")
+menu_table.add_row("  5. Why does this app use coordinates?", style= "bold #b8bb26")
 menu_table.add_row("  6. Exit", style= "bold #b8bb26")
 
 
@@ -816,8 +814,14 @@ def search_for_city():
         try:
             
             while work:
-                city = console.input("[bold #b8bb26]Enter your city's name: [/]")
+                city = console.input("""[bold #b8bb26]Enter your city's name or 'e' to leave: [/]""").strip().lower()
+                if city == "e" or city == "leave":
+                    work = False
+                    working = False
+                    return None
+                    
 
+                
                 payload = {
                     "name": city 
                     }   
