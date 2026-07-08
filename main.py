@@ -1,6 +1,7 @@
 from Functions import main_menu, greeting
 from rich.console import Console
 
+console = Console()
 if __name__ == "__main__":
     try: 
         greeting()
