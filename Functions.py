@@ -7,10 +7,11 @@ import time
 from datetime import datetime
 from Ascii_arts import weather_arts
 import random
+import os
 
 global emojis_dict
 
-
+DB_path = os.path.expanduser("~/.climate_database.json")
 
 
 console = Console()
@@ -59,9 +60,14 @@ menu_table.add_row("  6. Exit", style= "bold #b8bb26")
 
 
 def data_base_reader_no_print():
-    with open("data_base.json", "r", encoding="utf-8") as file:
+    if not os.path.exists(DB_path):
+    
+        with open(DB_path, "w", encoding="utf-8") as file:
+            json.dump({}, file)
+        
+    with open(DB_path, "r", encoding="utf-8") as file:
         data_base = json.load(file)
-        return(data_base)
+        return data_base
 
 
 display_mode = "default"
@@ -808,7 +814,7 @@ def add_city(city):
         }
         
         
-        with open("data_base.json", "w", encoding="utf-8") as file:
+        with open(DB_path, "w", encoding="utf-8") as file:
         
             json.dump(database, file, ensure_ascii=False, indent=4)
 

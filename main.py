@@ -1,4 +1,10 @@
 from Functions import main_menu, greeting
-greeting()
-main_menu()
-    
+from rich.console import Console
+
+if __name__ == "__main__":
+    try: 
+        greeting()
+        main_menu()
+
+    except KeyboardInterrupt:
+        console.print("\n\n[bold #fabd2f]CLI-Mate was interrupted. Goodbye, Mate![/]")
