@@ -33,54 +33,43 @@ The application is written in Python 3 and utilizes the following libraries:
 
 ## Installation and Setup
 
-To run CLI-mate locally on your machine, follow these steps:
+You can install **climate** on your system using one of the following methods:
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/kamilyarkaev/CLI-mate.git
-cd CLI-mate
-```
+### Method 1: Install via .deb Package (Recommended for Ubuntu/Debian)
+This is the easiest way to install. It automatically registers the global `climate` command and resolves all system-wide dependencies.
 
-### 2. Set Up a Virtual Environment (Recommended)
-Create and activate an isolated virtual environment to prevent package conflicts with your system Python:
+1. Go to the [Releases](https://github.com/kamilyarkaev/CLI-mate/releases) page of this repository.
+2. Download the latest `.deb` package (e.g., `climate_1.1_linux_amd64.deb`).
+3. Open your terminal in the directory where the file was downloaded and run:
+   ```bash
+   sudo apt install ./climate_1.1_linux_amd64.deb
+   ```
+4. Run the application from anywhere by typing:
+   ```bash
+   climate
+   ```
 
-On Linux/macOS:
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
+### Method 2: Setup from Source Code (For testing or non-Debian systems)
+If you want to run the raw source code or you are on a system that does not support `.deb` packages:
 
-On Windows (Command Prompt):
-```cmd
-python -m venv venv
-venv\Scripts\activate
-```
-
-### 3. Install the Dependencies
-Install the required external libraries inside your active virtual environment:
-```bash
-pip install requests rich
-```
-
----
-
-## How to Run the App
-
-With your virtual environment active, run the entry point of the application:
-
-```bash
-python3 main.py
-```
-
----
-
-## Project Structure
-
-- `main.py`: The main executable entry point that starts the program loop.
-- `Functions.py`: Contains the core logic, API request handling, chronological sorting, and table rendering.
-- `Ascii_arts.py`: Houses the pre-escaped, monospace-safe, and color-coded ASCII weather icons.
-- `data_base.json`: Your local database used to store saved cities and coordinates.
-
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/kamilyarkaev/CLI-mate.git
+   cd CLI-mate
+   ```
+2. Set up a virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. Install the dependencies inside the virtual environment:
+   ```bash
+   pip install requests rich
+   ```
+4. Run the application:
+   ```bash
+   python3 main.py
+   ```
 
 
 
