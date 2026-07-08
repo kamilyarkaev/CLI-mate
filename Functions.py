@@ -98,7 +98,7 @@ def main_menu():
             
             match choice:
                 
-                case "exit" | "6":
+                case "exit" | "6" | "e" | "leave" | "x":
                     console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
                     break
                 
@@ -779,12 +779,13 @@ def saves_cities_and_coords():
 def greeting():
     console.print("[bold #fabd2f]Hello, this is a CLI forecast program, or CLI-Mate[/]")
     length = len(data_base_reader_no_print())
+    global do_a_break
     if length < 1:
         new_city = search_for_city()
         if new_city:
             add_city(new_city)
+            do_a_break = False
         else:
-            global do_a_break
             do_a_break = True
     else: 
         do_a_break = False
