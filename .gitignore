@@ -4,3 +4,5 @@ get_weather_test.py
 test.py
 geocode_test.py
 ascii_art_output_test.py
+.cache.sqlite
+another_test.py

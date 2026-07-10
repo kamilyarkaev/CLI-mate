@@ -55,8 +55,8 @@ menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
 menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
 menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
 menu_table.add_row("  5. Why does this app use coordinates?", style= "bold #b8bb26")
-menu_table.add_row("  6. Exit", style= "bold #b8bb26")
-
+menu_table.add_row("  6. Manage forecast parameters", style= "bold #b8bb26 ")
+menu_table.add_row("  7. Exit", style= "bold #b8bb26")
 
 
 def data_base_reader_no_print():
@@ -104,7 +104,7 @@ def main_menu():
             
             match choice:
                 
-                case "exit" | "6" | "e" | "leave" | "x":
+                case "exit" | "7" | "e" | "leave" | "x":
                     console.print("\n[bold #fabd2f]Thank you for using CLI-Mate, Mate! Goodbye![/]")
                     break
                 
@@ -207,6 +207,14 @@ def main_menu():
 
 
 
+                
+                case "6":
+                    global add_windspeed, wind_direction, visibility, apparent_temperature, precipation_probability, uv_index_daily, max_app_temp_daily, precipation_probability_max_daily
+                
+                
+                
+                
+                
                 case _:
                     console.print("\n[bold red]Invalid choice,[/] [bold #b8bb26]please enter a number from 1 to 6.[/]")
                     time.sleep(0.5)
@@ -948,12 +956,6 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
             print(f"Request error: {response.status_code}")
             print("No other options left, you got to wait till everything's ok")
 
-            print("HTTP Status Code Guide:",)
-            print("200-299  Success! Everything worked perfectly.") 
-            print("300-399  Redirect. The page moved somewhere else.")
-            print("400-499  Client Error. The problem is on YOUR side (check inputs, URLs, or login).")
-            print("500-599  Server Error. The problem is on THEIR side (the website/API is broken).")
-            
 
 
 
@@ -1002,10 +1004,13 @@ def get_weather(city_name, lat, lon):
         }
         
         backup_url = "https://api.open-meteo.com/v1/forecast"
-        backup_parameters = {
-            "latitude": lat,
-            "longitude": lon,
-            "current_weather": "true"
+        backup_params = {
+	    "latitude": lat,
+	    "longitude": lon,
+	    "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "sunset", "uv_index_clear_sky_max", "uv_index_max", "rain_sum", "showers_sum", "snowfall_sum", "apparent_temperature_max", "precipitation_probability_max", "sunrise"],
+        "hourly": ["temperature_2m", "weather_code", "temperature_80m", "snowfall", "showers", "rain", "precipitation", "visibility", "wind_speed_10m", "apparent_temperature", "precipitation_probability", "wind_direction_10m"],
+        "current": ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "is_day", "precipitation", "rain", "showers", "snowfall", "weather_code", "cloud_cover", "surface_pressure", "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m"],
+        "timezone": "auto",
         }
         
         
@@ -1015,12 +1020,6 @@ def get_weather(city_name, lat, lon):
             console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
             data = response.json()
         
-            #current_temp = data["current_condition"][0]["temp_C"]
-            #current_weather_description = data["current_condition"][0]["weatherDesc"][0]["value"]
-
-            #weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-            #weather_table.add_row(f"[bold #928374]The weather is [/][bold #b8bb26]{current_weather_description}[/]")
-            #console.print(weather_table)
             return data, city_name
         
         
@@ -1028,14 +1027,8 @@ def get_weather(city_name, lat, lon):
         else:
             print(f"Request error: {response.status_code}")
             print("Attempting backup website")
-            get_weather_backup(backup_url, backup_parameters, city_name)
-            
-            print("HTTP Status Code Guide:")
-            print("200-299  Success! Everything worked perfectly.") 
-            print("300-399  Redirect. The page moved somewhere else.")
-            print("400-499  Client Error. The problem is on YOUR side, and it's not about the programm, I(da developer) am precise.")
-            print("500-599  Server Error. The problem is on THEIR side (the website/API is broken).")
-            
+            get_weather_backup(backup_url, backup_params, city_name)
+   
             
     except Exception as e:
         print(f"Connection error: {e}")

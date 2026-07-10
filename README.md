@@ -1,6 +1,6 @@
 # CLI-Mate
 
-CLI-mate is a high-accuracy, lightweight command-line weather forecast utility styled with Gruvbox color palette. It features a local JSON database for city caching, automatic day/night emoji rendering based on real-time sunrise/sunset calculations, and three display modes.
+CLI-mate is a high-accuracy, command-line weather forecast utility styled with Gruvbox color palette. It features a local JSON database for city caching, automatic day/night emoji rendering based on real-time sunrise/sunset calculations, and three display modes.
 
 ---
 
