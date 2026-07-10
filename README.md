@@ -152,13 +152,26 @@ Now alongside temperature in any forecast display mode you can see the time of s
 
 Tomorrow I will work with pyinstaller to make this a 1 file program
 
->**From July 2nd/3rd/4th 21:52 2026     02.07.2026**.
+>**From July 2nd/3rd/4th/9th 21:52 2026     02.07.2026**.
 
 I did not work on CLI-Mate today because I am swamped with my homework right now, sorry if anyone cares
 
 >**From July 5th,6th,7th 21:30 2026    07.07.2026**.
 
 Fixing minor problems and adding slightly more flexible functional, rn I am working on making a deb package out of all this
+
+>**From July 10th 20:47 2026     10.07.2026**.
+
+New display type has been added to the program, and it is 'daily',
+it uses open-meteo api as the main api for it because wttr.in does not provide a weekly forecast. 
+
+Also I decided to leave the idea with a singular file made with pyinstaller because the developing direction is different now, 
+
+I want so that anyone on linux could download my program via 'sudo apt install'.
+
+Therefore I need to upload my program to the downstream debian repo, 
+
+There are also still a few issues with database file paths, as I need to make sure they comply with XDG standards and don't clutter the user's home directory.
 
 
 
