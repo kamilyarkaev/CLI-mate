@@ -866,14 +866,15 @@ def get_forecasts_by_type(data, city_name,choice):
                 precipation_max_row = [f"{int(x)}%" for x in daily_precipitation_probability_max[:7]]
                 weekly_table.add_row("Rain chance", *precipation_max_row, style= "#8ec07c")
             
-            if settings_database["daily_display"]["Sunset"] == True:
-                daily_sunset_row = [f"{x.split("T")[1]}" for x in daily_sunset[:7]]
-                weekly_table.add_row("Sunset", *daily_sunset_row, style= "#fe8019")
-            
             if settings_database["daily_display"]["Sunrise"] == True:
                 daily_sunrise_row = [f"{x.split("T")[1]}" for x in daily_sunrise[:7]]
                 weekly_table.add_row("Sunrise", *daily_sunrise_row, style="#d3869b")
             
+            if settings_database["daily_display"]["Sunset"] == True:
+                daily_sunset_row = [f"{x.split("T")[1]}" for x in daily_sunset[:7]]
+                weekly_table.add_row("Sunset", *daily_sunset_row, style= "#fe8019")
+            
+
             return weekly_table
 
 
