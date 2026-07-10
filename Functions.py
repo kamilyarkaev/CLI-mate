@@ -272,7 +272,7 @@ def main_menu():
                                 database["display_mode"] = display_mode
                                 with open(settings_path, "w", encoding="utf-8") as file:
         
-                                    json.dump(settings_path, file, ensure_ascii=False, indent=4)
+                                    json.dump(database, file, ensure_ascii=False, indent=4)
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to short[/]")
 
@@ -285,7 +285,7 @@ def main_menu():
                                 database["display_mode"] = display_mode
                                 with open(settings_path, "w", encoding="utf-8") as file:
         
-                                    json.dump(settings_path, file, ensure_ascii=False, indent=4)
+                                    json.dump(database, file, ensure_ascii=False, indent=4)
                                 display_mode_choice = False
                                 
                                 
