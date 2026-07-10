@@ -9,6 +9,9 @@ from Ascii_arts import weather_arts
 import random
 import os
 
+
+
+
 global emojis_dict
 
 DB_path = os.path.expanduser("~/.climate_database.json")
@@ -87,8 +90,8 @@ menu_table.add_row("  1. Get weather for a saved city", style= "bold #b8bb26")
 menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
 menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
 menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
-menu_table.add_row("  5. Why does this app use coordinates?", style= "bold #b8bb26")
-menu_table.add_row("  6. Daily forecast parameters", style= "bold #b8bb26 ")
+menu_table.add_row("  5. Change daily(whole week) forecast parameters", style= "bold #b8bb26 ")
+menu_table.add_row("  6. Why does this app use coordinates?", style= "bold #b8bb26")
 menu_table.add_row("  7. Exit", style= "bold #b8bb26")
 
 
@@ -104,21 +107,64 @@ def data_base_reader_no_print():
 
 
 def data_base_reader_no_print_settings():
+    Default_settings = {
+    "display_mode": "default",
+    "daily_display": {
+        "Weather_desc": True,
+        "Emoji": True,
+        "Max_apparent_temp": True,
+        "UV_index": True,
+        "Rain_chance": True,
+        "Sunrise": True,
+        "Sunset": True
+    }
+    }
+    
     if not os.path.exists(settings_path):
     
         with open(settings_path, "w", encoding="utf-8") as file:
-            json.dump({}, file)
+            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
         
     with open(settings_path, "r", encoding="utf-8") as file:
         data_base = json.load(file)
         return data_base
 
+def data_base_reader_no_print_display_mode():
+    Default_settings = {
+    "display_mode": "default",
+    "daily_display": {
+        "Weather_desc": True,
+        "Emoji": True,
+        "Max_apparent_temp": True,
+        "UV_index": True,
+        "Rain_chance": True,
+        "Sunrise": True,
+        "Sunset": True
+    }
+    }
+    
+    if not os.path.exists(settings_path):
+    
+        with open(settings_path, "w", encoding="utf-8") as file:
+            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
+        
+    with open(settings_path, "r", encoding="utf-8") as file:
+        data_base = json.load(file)
+        return data_base["display_mode"]
 
 
 
 
+def get_initial_display_mode():
+    try:
+        if os.path.exists(settings_path):
+            with open(settings_path, "r", encoding="utf-8") as file:
+                return json.load(file).get("display_mode", "default")
+    except Exception:
+        pass
+    return "default"
 
-
+display_mode = get_initial_display_mode()
 
 
 
@@ -195,6 +241,7 @@ def main_menu():
                 case "4":
                     global choice_table
                     
+                    display_mode = data_base_reader_no_print_display_mode()
                     choice_table = Table(
                     title=f"[bold #fabd2f]Types of forecast displays,[/] [bold #b8bb26]current: {display_mode}[/]", 
                     box=box.ROUNDED,
@@ -221,6 +268,11 @@ def main_menu():
                             
                             case "1" | "short":
                                 display_mode = "short"
+                                database = data_base_reader_no_print_settings()
+                                database["display_mode"] = display_mode
+                                with open(settings_path, "w", encoding="utf-8") as file:
+        
+                                    json.dump(settings_path, file, ensure_ascii=False, indent=4)
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to short[/]")
 
@@ -229,6 +281,14 @@ def main_menu():
                             
                             case "2" | "default":
                                 display_mode = "default"
+                                database = data_base_reader_no_print_settings()
+                                database["display_mode"] = display_mode
+                                with open(settings_path, "w", encoding="utf-8") as file:
+        
+                                    json.dump(settings_path, file, ensure_ascii=False, indent=4)
+                                display_mode_choice = False
+                                
+                                
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to default[/]")                    
                             
@@ -236,11 +296,22 @@ def main_menu():
                             
                             case "3" | "detailed":
                                 display_mode = "detailed" 
+                                database = data_base_reader_no_print_settings()
+                                database["display_mode"] = display_mode
+                                with open(settings_path, "w", encoding="utf-8") as file:
+        
+                                    json.dump(database, file, ensure_ascii=False, indent=4)
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to detailed[/]")                        
                             
                             case "4" | "Daily":
                                 display_mode = "daily"
+                                database = data_base_reader_no_print_settings()
+                                database["display_mode"] = display_mode
+                                with open(settings_path, "w", encoding="utf-8") as file:
+        
+                                    json.dump(database, file, ensure_ascii=False, indent=4)
+                                
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to daily[/]")
                             
@@ -252,14 +323,77 @@ def main_menu():
 
 
 
-                case "5":
+                case "6":
                     explain_why_coordinates()
 
 
 
                 
-                case "6":
-                    pass
+                case "5":
+                    possible_choices_list = ["e","leave","exit","x","l", "rain","chance", "uv", "index_uv","index","max_temp","max_apparant", "apparant_temp","apparant","temp","emoji","weather_emoji","weatheremoji","weatherdesc","weather", "weather_desc", "max_apparant_temp", "uv_index", "rain_chance","sunrise","sunset"]
+                    valid_digits = ["1", "2", "3", "4", "5", "6", "7"]
+                    console.print(saved_settings())
+                    choosing = True
+                    database = data_base_reader_no_print_settings()
+                    all_valid = valid_digits + possible_choices_list
+                    
+                    while choosing:
+                        choice = console.input("[bold #fabd2f]Enter the number of the setting you want to change:(or 'e' to leave)[/] ").strip().lower()
+                    
+                        if choice not in all_valid:
+                            console.print("[bold red]Error,[/] [bold #b8bb26]type again[/]")
+                            continue
+
+                        match choice:
+                            case "1"| "weather"|"weatherdesc"|"weather_desc":
+                                database["daily_display"]["Weather_desc"] = not database["daily_display"]["Weather_desc"]
+                                status = database["daily_display"]["Weather_desc"]
+                                color = "#b8bb26" if status else "red"  
+                                console.print(f"[bold #8ec07c]'Weather_desc' set to [/][bold {color}]{status}[/]")
+                                
+                            case "2"| "emoji"| "weather_emoji"|"weatheremoji":
+                                database["daily_display"]["Emoji"] = not database["daily_display"]["Emoji"]
+                                status = database["daily_display"]["Emoji"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'Emoji' set to [/][bold {color}]{status}[/]")
+                                
+                            case "3"| "apparant"| "temp"| "apparant_temp"| "max_apparant"| "max_temp"| "max_apparant_temp":
+                                database["daily_display"]["Max_apparent_temp"] = not database["daily_display"]["Max_apparent_temp"]
+                                status = database["daily_display"]["Max_apparent_temp"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'Max_apparent_temp' set to [/][bold {color}]{status}[/]")
+                                
+                            case "4"| "uv"| "uv_index"| "index_uv"| "index":
+                                database["daily_display"]["UV_index"] = not database["daily_display"]["UV_index"]
+                                status = database["daily_display"]["UV_index"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'UV_index' set to [/][bold {color}]{status}[/]")
+                                
+                            case "5"| "rain"| "rain_chance"| "chance":
+                                database["daily_display"]["Rain_chance"] = not database["daily_display"]["Rain_chance"]
+                                status = database["daily_display"]["Rain_chance"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'Rain_chance' set to [/][bold {color}]{status}[/]")
+                                
+                            case "6"| "sunrise":
+                                database["daily_display"]["Sunrise"] = not database["daily_display"]["Sunrise"]
+                                status = database["daily_display"]["Sunrise"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'Sunrise' set to [/][bold {color}]{status}[/]")
+                                
+                            case "7"| "sunset":
+                                database["daily_display"]["Sunset"] = not database["daily_display"]["Sunset"]
+                                status = database["daily_display"]["Sunset"]
+                                color = "#b8bb26" if status else "red"
+                                console.print(f"[bold #8ec07c]'Sunset' set to [/][bold {color}]{status}[/]")
+                                
+                            case "e"| "leave"|"exit"|"x"|"l":
+                                choosing = False
+                                break
+
+                    # Код записи теперь стоит ЗДЕСЬ и гарантированно сработает сразу после выхода из цикла настройки
+                    with open(settings_path, "w", encoding="utf-8") as file:
+                         json.dump(database, file, ensure_ascii=False, indent=4)
                 
                 
                 
@@ -376,7 +510,8 @@ def get_forecasts_by_type(data, city_name,choice):
     upcoming = []
     current_time = datetime.now().strftime("%H:%M")
     
-    emojis_dict = determine_time_day_or_night(data, current_time)
+    if choice != "daily" and "weather" in data:
+        emojis_dict = determine_time_day_or_night(data, current_time)
 
 
 
@@ -608,10 +743,143 @@ def get_forecasts_by_type(data, city_name,choice):
 
 
         case "daily":
-            pass
+            
+            
+            
+            #  CURRENT DATA (СЕЙЧАС)
+            current_time = data["current"]["time"]
+            current_temperature_2m = data["current"]["temperature_2m"]
+            current_relative_humidity_2m = data["current"]["relative_humidity_2m"]
+            current_apparent_temperature = data["current"]["apparent_temperature"]
+            current_is_day = data["current"]["is_day"]
+            current_precipitation = data["current"]["precipitation"]
+            current_rain = data["current"]["rain"]
+            current_showers = data["current"]["showers"]
+            current_snowfall = data["current"]["snowfall"]
+            current_weather_code = data["current"]["weather_code"]
+            current_cloud_cover = data["current"]["cloud_cover"]
+            current_surface_pressure = data["current"]["surface_pressure"]
+            current_wind_speed_10m = data["current"]["wind_speed_10m"]
+            current_wind_direction_10m = data["current"]["wind_direction_10m"]
+            current_wind_gusts_10m = data["current"]["wind_gusts_10m"]
 
-        
-        
+
+
+            #  HOURLY DATA (ПО ЧАСАМ)
+            # Все переменные ниже — это обычные списки (lists) Python
+            hourly_time = data["hourly"]["time"]  # Список временных строк (например, ["2026-07-10T00:00", итд])
+            hourly_temperature_2m = data["hourly"]["temperature_2m"]
+            hourly_weather_code = data["hourly"]["weather_code"]
+            hourly_snowfall = data["hourly"]["snowfall"]
+            hourly_showers = data["hourly"]["showers"]
+            hourly_rain = data["hourly"]["rain"]
+            hourly_precipitation = data["hourly"]["precipitation"]
+            hourly_visibility = data["hourly"]["visibility"]
+            hourly_wind_speed_10m = data["hourly"]["wind_speed_10m"]
+            hourly_apparent_temperature = data["hourly"]["apparent_temperature"]
+            hourly_precipitation_probability = data["hourly"]["precipitation_probability"]
+            hourly_wind_direction_10m = data["hourly"]["wind_direction_10m"]
+
+
+
+            #  DAILY DATA (ПО ДНЯМ)
+            # Все переменные ниже — это обычные списки из 7 элементов (на неделю вперед)
+            daily_time = data["daily"]["time"]  # Список дат ["2026-07-10", "2026-07-11" итд])
+            daily_weather_code = data["daily"]["weather_code"]
+            daily_temperature_2m_max = data["daily"]["temperature_2m_max"]
+            daily_temperature_2m_min = data["daily"]["temperature_2m_min"]
+            daily_sunset = data["daily"]["sunset"]  
+            daily_uv_index_clear_sky_max = data["daily"]["uv_index_clear_sky_max"]
+            daily_uv_index_max = data["daily"]["uv_index_max"]
+            daily_rain_sum = data["daily"]["rain_sum"]
+            daily_showers_sum = data["daily"]["showers_sum"]
+            daily_snowfall_sum = data["daily"]["snowfall_sum"]
+            daily_apparent_temperature_max = data["daily"]["apparent_temperature_max"]
+            daily_precipitation_probability_max = data["daily"]["precipitation_probability_max"]
+            daily_sunrise = data["daily"]["sunrise"]  
+
+            settings_database = data_base_reader_no_print_settings()
+            
+            weekly_table = Table(
+            title=f"[bold #fabd2f]Weekly forecast in {city_name}[/bold #fabd2f]", 
+            box=box.ROUNDED,
+            show_header=True,
+            border_style="#928374"
+            )
+
+            Weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+            start_day = datetime.now().weekday()
+
+
+
+            
+            weekly_table.add_column("[bold #fabd2f]Metric[/]", justify= "left", style="bold #fabd2f")
+
+            daily_weather_desc = []
+            for x in daily_weather_code:
+                daily_weather_desc.append(WMO_CODES[x])
+
+
+
+            for x in range(7):
+                if x == 0:
+                    day_name = "[bold #b8bb26]Today[/]"
+                elif x == 1:
+                    day_name = "[bold #a89984]Tmrw[/]"
+                else:
+
+                    day_index = (start_day + x) % 7
+                    weekday = Weekdays[day_index]
+                    
+                    if weekday in ["Sat", "Sun"]:
+                        day_name = f"[bold #fe8019]{weekday}[/]"
+                    else:
+                        day_name = f"[bold #a89984]{weekday}[/]"
+                        
+
+                weekly_table.add_column(day_name, justify="left", style="bold #a89984")
+
+
+
+            max_temps_row = [ f"{int(x)}°C" for x in daily_temperature_2m_max[:7]]
+            weekly_table.add_row("Max temp", *max_temps_row, style= "#fe8019")
+            min_temps_row = [f"{int(x)}°C" for x in daily_temperature_2m_min[:7]]
+            weekly_table.add_row("Min temp",*min_temps_row, style= "#83a598")
+            
+            if settings_database["daily_display"]["Emoji"] == True:
+                emojis_row = [WMO_CODES.get(code, {"day": "❓"})["day"] for code in daily_weather_code[:7]]
+                weekly_table.add_row("Emoji", *emojis_row)
+            
+            if settings_database["daily_display"]["Weather_desc"] == True:
+                daily_desc_row = [f"{x["desc"]}" for x in daily_weather_desc[:7]]
+                weekly_table.add_row("Weather", *daily_desc_row, style= "bold #fabd2f")
+            
+            if settings_database["daily_display"]["Max_apparent_temp"] == True:
+                app_max_temps_row = [f"{int(x)}°C" for x in daily_apparent_temperature_max[:7]]
+                weekly_table.add_row("Apparent temp", *app_max_temps_row,  style= "#fe8019")
+            
+            if settings_database["daily_display"]["UV_index"] == True:
+                uv_row = [f"[bold #fabd2f]{int(uv)}[/]" for uv in daily_uv_index_max[:7]]
+                weekly_table.add_row("UV Index", *uv_row)
+            
+            if settings_database["daily_display"]["Rain_chance"] == True:
+                precipation_max_row = [f"{int(x)}%" for x in daily_precipitation_probability_max[:7]]
+                weekly_table.add_row("Rain chance", *precipation_max_row, style= "#8ec07c")
+            
+            if settings_database["daily_display"]["Sunset"] == True:
+                daily_sunset_row = [f"{x.split("T")[1]}" for x in daily_sunset[:7]]
+                weekly_table.add_row("Sunset", *daily_sunset_row, style= "#fe8019")
+            
+            if settings_database["daily_display"]["Sunrise"] == True:
+                daily_sunrise_row = [f"{x.split("T")[1]}" for x in daily_sunrise[:7]]
+                weekly_table.add_row("Sunrise", *daily_sunrise_row, style="#d3869b")
+            
+            return weekly_table
+
+
+
+
+
         
         
         
@@ -832,16 +1100,23 @@ def get_forecasts_by_type(data, city_name,choice):
 
 def saved_settings():
     current_db = data_base_reader_no_print_settings()
-
     saved_settings_dict = current_db["daily_display"]
     daily_settings_table = Table(
         title="[bold #fabd2f]Daily forecast settings[/bold #fabd2f]", 
         box=box.ROUNDED,
         show_header=False,
         border_style="#928374"
-        )
+    )
+    counter = 1
+    for x in saved_settings_dict:
 
-
+        val = saved_settings_dict[x]
+        if val is True: 
+            daily_settings_table.add_row(f"[bold #928374]{counter}. show[/] [bold #fabd2f]{x}[/][bold #928374]:[/]", f"[bold #b8bb26]{val}[/]")
+        else:
+            daily_settings_table.add_row(f"[bold #928374]{counter}. show[/] [bold #fabd2f]{x}[/][bold #928374]:[/]", f"[bold #fe8019]{val}[/]")
+        counter += 1   
+    return daily_settings_table
 
 
 
@@ -1016,20 +1291,23 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
     try:
 
         response = requests.get(backup_url, backup_parameters)
+        data = response.json()
+        if display_mode == "short" or display_mode == "default" or display_mode == "detailed":
+            if response.status_code == 200:
+                console.print("[bold #b8bb26]\nRequest to open meteo: success[/]")            
+                current_temp = data["current_weather"]["temperature"]
 
-        if response.status_code == 200:
-            console.print("[bold #b8bb26]\nRequest to open meteo: success[/]")
-            data = response.json()
-        
-            current_temp = data["current_weather"]["temperature"]
+                backup_weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
+                console.print(backup_weather_table)
+                
+    
+            else:
+                print(f"Request error: {response.status_code}")
+                print("No other options left, you got to wait till everything's ok")
+        elif display_mode == "daily":
+            return data, city_name, display_mode
 
-            backup_weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-            console.print(backup_weather_table)
             
-   
-        else:
-            print(f"Request error: {response.status_code}")
-            print("No other options left, you got to wait till everything's ok")
 
 
 
@@ -1072,27 +1350,29 @@ def get_weather(city_name, lat, lon):
 	    "latitude": lat,
 	    "longitude": lon,
 	    "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "sunset", "uv_index_clear_sky_max", "uv_index_max", "rain_sum", "showers_sum", "snowfall_sum", "apparent_temperature_max", "precipitation_probability_max", "sunrise"],
-        "hourly": ["temperature_2m", "weather_code", "temperature_80m", "snowfall", "showers", "rain", "precipitation", "visibility", "wind_speed_10m", "apparent_temperature", "precipitation_probability", "wind_direction_10m"],
+        "hourly": ["temperature_2m", "weather_code", "snowfall", "showers", "rain", "precipitation", "visibility", "wind_speed_10m", "apparent_temperature", "precipitation_probability", "wind_direction_10m"],
         "current": ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "is_day", "precipitation", "rain", "showers", "snowfall", "weather_code", "cloud_cover", "surface_pressure", "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m"],
         "timezone": "auto",
         }
         
-        
-        response = requests.get(url, parameters, timeout= 5)
+        if display_mode == "short" or display_mode == "default" or display_mode == "detailed":
+            response = requests.get(url, parameters, timeout= 5)
 
-        if response.status_code == 200:
-            console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
+            if response.status_code == 200:
+                console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
+                data = response.json()
+            else:
+                print(f"Request error: {response.status_code}")
+                print("Attempting backup website")
+                get_weather_backup(backup_url, backup_params, city_name)
+                return data, city_name
+        elif display_mode == "daily":
+            response = requests.get(backup_url, backup_params, timeout= 5)
             data = response.json()
-        
             return data, city_name
-        
-        
-   
         else:
-            print(f"Request error: {response.status_code}")
-            print("Attempting backup website")
-            get_weather_backup(backup_url, backup_params, city_name)
-   
+            console.print("[bold red]Error fetching daily forecast from Open-Meteo[/bold red]")
+            return None
             
     except Exception as e:
         print(f"Connection error: {e}")
