@@ -13,8 +13,41 @@ global emojis_dict
 
 DB_path = os.path.expanduser("~/.climate_database.json")
 
-
+settings_path = os.path.expanduser("~/.cli-mate_forecast_settings")
 console = Console()
+
+
+
+WMO_CODES = {
+    0: {"day": "☀️", "night": "🌙", "desc": "Clear"},
+    1: {"day": "🌤️", "night": "☁️", "desc": "Sunny"},
+    2: {"day": "⛅", "night": "☁️", "desc": "Partly"},
+    3: {"day": "☁️", "night": "☁️", "desc": "Cloudy"},
+    45: {"day": "🌫️", "night": "🌫️", "desc": "Fog"},
+    48: {"day": "🌫️", "night": "🌫️", "desc": "Fog"},
+    51: {"day": "🌧️", "night": "🌧️", "desc": "Drizzle"},
+    53: {"day": "🌧️", "night": "🌧️", "desc": "Drizzle"},
+    55: {"day": "🌧️", "night": "🌧️", "desc": "Drizzle"},
+    56: {"day": "🌨️", "night": "🌨️", "desc": "Sleet"},
+    57: {"day": "🌨️", "night": "🌨️", "desc": "Sleet"},
+    61: {"day": "🌦️", "night": "🌧️", "desc": "Rain"},
+    63: {"day": "🌧️", "night": "🌧️", "desc": "Rain"},
+    65: {"day": "🌧️", "night": "🌧️", "desc": "Rain"},
+    66: {"day": "🌨️", "night": "🌨️", "desc": "Sleet"},
+    67: {"day": "🌨️", "night": "🌨️", "desc": "Sleet"},
+    71: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    73: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    75: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    77: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    80: {"day": "🌦️", "night": "🌧️", "desc": "Showers"},
+    81: {"day": "🌧️", "night": "🌧️", "desc": "Showers"},
+    82: {"day": "⛈️", "night": "⛈️", "desc": "Storm"},
+    85: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    86: {"day": "🌨️", "night": "🌨️", "desc": "Snow"},
+    95: {"day": "⛈️", "night": "⛈️", "desc": "Storm"},
+    96: {"day": "⛈️", "night": "⛈️", "desc": "Storm"},
+    99: {"day": "⛈️", "night": "⛈️", "desc": "Storm"}
+}
 
 
 DAY_EMOJIS = {
@@ -55,7 +88,7 @@ menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
 menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
 menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
 menu_table.add_row("  5. Why does this app use coordinates?", style= "bold #b8bb26")
-menu_table.add_row("  6. Manage forecast parameters", style= "bold #b8bb26 ")
+menu_table.add_row("  6. Daily forecast parameters", style= "bold #b8bb26 ")
 menu_table.add_row("  7. Exit", style= "bold #b8bb26")
 
 
@@ -70,7 +103,17 @@ def data_base_reader_no_print():
         return data_base
 
 
-display_mode = "default"
+def data_base_reader_no_print_settings():
+    if not os.path.exists(settings_path):
+    
+        with open(settings_path, "w", encoding="utf-8") as file:
+            json.dump({}, file)
+        
+    with open(settings_path, "r", encoding="utf-8") as file:
+        data_base = json.load(file)
+        return data_base
+
+
 
 
 
@@ -147,7 +190,7 @@ def main_menu():
                     if not db:
                         print("\nYour database is empty!")
                     else:
-                        console.print(saves_cities_and_coords())
+                        console.print(saved_cities_and_coords())
 
                 case "4":
                     global choice_table
@@ -161,6 +204,7 @@ def main_menu():
                     choice_table.add_row("1. Short(just current time)", style= "bold #b8bb26")
                     choice_table.add_row("2. Default(this moment, few upcoming hours and short about tomorrow)", style= "bold #b8bb26")
                     choice_table.add_row("3. Deatiled(the next 42 hours)", style= "bold #b8bb26")
+                    choice_table.add_row("4. Daily(for the whole week)", style= "bold #b8bb26")
                     
                     console.print(choice_table)
                     
@@ -194,6 +238,12 @@ def main_menu():
                                 display_mode = "detailed" 
                                 display_mode_choice = False
                                 console.print("[bold #b8bb26]Set to detailed[/]")                        
+                            
+                            case "4" | "Daily":
+                                display_mode = "daily"
+                                display_mode_choice = False
+                                console.print("[bold #b8bb26]Set to daily[/]")
+                            
                             case _:
                                 console.print(f"[bold red]Enter a number (1-3)[/]")
 
@@ -209,7 +259,7 @@ def main_menu():
 
                 
                 case "6":
-                    global add_windspeed, wind_direction, visibility, apparent_temperature, precipation_probability, uv_index_daily, max_app_temp_daily, precipation_probability_max_daily
+                    pass
                 
                 
                 
@@ -557,8 +607,25 @@ def get_forecasts_by_type(data, city_name,choice):
 
 
 
+        case "daily":
+            pass
 
-
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         case "detailed":
             current_time = datetime.now().strftime("%H:%M")
             
@@ -763,6 +830,16 @@ def get_forecasts_by_type(data, city_name,choice):
 
 
 
+def saved_settings():
+    current_db = data_base_reader_no_print_settings()
+
+    saved_settings_dict = current_db["daily_display"]
+    daily_settings_table = Table(
+        title="[bold #fabd2f]Daily forecast settings[/bold #fabd2f]", 
+        box=box.ROUNDED,
+        show_header=False,
+        border_style="#928374"
+        )
 
 
 
@@ -771,9 +848,7 @@ def get_forecasts_by_type(data, city_name,choice):
 
 
 
-
-
-def saves_cities_and_coords():
+def saved_cities_and_coords():
         current_db = data_base_reader_no_print()
         
         saved_cities_table = Table(
@@ -961,17 +1036,6 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
 
     except:
         print("Something went wrong, idk what")
-
-
-def print_weather(data, city_name):
-    pass
-
-
-
-
-
-
-
 
 
 

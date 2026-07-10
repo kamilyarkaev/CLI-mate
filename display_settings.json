@@ -1,0 +1,12 @@
+{
+    "display_mode": "default",
+    "daily_display": {
+        "Weather_desc": "True",
+        "Emoji": "True",
+        "Max_apparant_temp": "True",
+        "UV_index": "True",
+        "Rain_chance": "True",
+        "Sunrise": "True",
+        "Sunset": "True"
+    }
+}
