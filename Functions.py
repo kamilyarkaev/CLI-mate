@@ -1362,6 +1362,7 @@ def get_weather(city_name, lat, lon):
             if response.status_code == 200:
                 console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
                 data = response.json()
+                return data, city_name
             else:
                 print(f"Request error: {response.status_code}")
                 print("Attempting backup website")
