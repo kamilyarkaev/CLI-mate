@@ -8,4 +8,4 @@ if __name__ == "__main__":
         main_menu()
 
     except KeyboardInterrupt:
-        console.print("\n\n[bold #fabd2f]CLI-Mate was interrupted. Goodbye, Mate![/]")
+        console.print("\n\n[bold #fabd2f]CLI-Mate was interrupted. Bye, Mate![/]")

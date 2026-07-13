@@ -801,7 +801,7 @@ def get_forecasts_by_type(data, city_name,choice):
             settings_database = data_base_reader_no_print_settings()
             
             weekly_table = Table(
-            title=f"[bold #fabd2f]Weekly forecast in {city_name}[/bold #fabd2f]", 
+            title=f"[bold #fabd2f]Weekly forecast for {city_name}[/bold #fabd2f]", 
             box=box.ROUNDED,
             show_header=True,
             border_style="#928374"
@@ -846,6 +846,10 @@ def get_forecasts_by_type(data, city_name,choice):
             min_temps_row = [f"{int(x)}°C" for x in daily_temperature_2m_min[:7]]
             weekly_table.add_row("Min temp",*min_temps_row, style= "#83a598")
             
+            if settings_database["daily_display"]["Max_apparent_temp"] == True:
+                app_max_temps_row = [f"{int(x)}°C" for x in daily_apparent_temperature_max[:7]]
+                weekly_table.add_row("Apparent temp", *app_max_temps_row,  style= "#fe8019")
+            
             if settings_database["daily_display"]["Emoji"] == True:
                 emojis_row = [WMO_CODES.get(code, {"day": "❓"})["day"] for code in daily_weather_code[:7]]
                 weekly_table.add_row("Emoji", *emojis_row)
@@ -854,17 +858,13 @@ def get_forecasts_by_type(data, city_name,choice):
                 daily_desc_row = [f"{x["desc"]}" for x in daily_weather_desc[:7]]
                 weekly_table.add_row("Weather", *daily_desc_row, style= "bold #fabd2f")
             
-            if settings_database["daily_display"]["Max_apparent_temp"] == True:
-                app_max_temps_row = [f"{int(x)}°C" for x in daily_apparent_temperature_max[:7]]
-                weekly_table.add_row("Apparent temp", *app_max_temps_row,  style= "#fe8019")
+            if settings_database["daily_display"]["Rain_chance"] == True:
+                precipation_max_row = [f"{int(x)}%" for x in daily_precipitation_probability_max[:7]]
+                weekly_table.add_row("Rain chance", *precipation_max_row, style= "#8ec07c")
             
             if settings_database["daily_display"]["UV_index"] == True:
                 uv_row = [f"[bold #fabd2f]{int(uv)}[/]" for uv in daily_uv_index_max[:7]]
                 weekly_table.add_row("UV Index", *uv_row)
-            
-            if settings_database["daily_display"]["Rain_chance"] == True:
-                precipation_max_row = [f"{int(x)}%" for x in daily_precipitation_probability_max[:7]]
-                weekly_table.add_row("Rain chance", *precipation_max_row, style= "#8ec07c")
             
             if settings_database["daily_display"]["Sunrise"] == True:
                 daily_sunrise_row = [f"{x.split("T")[1]}" for x in daily_sunrise[:7]]
@@ -1291,7 +1291,7 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
     
     try:
 
-        response = requests.get(backup_url, backup_parameters)
+        response = requests.get(backup_url, backup_parameters, timeout= 3)
         data = response.json()
         if display_mode == "short" or display_mode == "default" or display_mode == "detailed":
             if response.status_code == 200:
@@ -1357,7 +1357,7 @@ def get_weather(city_name, lat, lon):
         }
         
         if display_mode == "short" or display_mode == "default" or display_mode == "detailed":
-            response = requests.get(url, parameters, timeout= 5)
+            response = requests.get(url, parameters, timeout= 3)
 
             if response.status_code == 200:
                 console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
