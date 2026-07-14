@@ -14,9 +14,19 @@ import os
 
 global emojis_dict
 
-DB_path = os.path.expanduser("~/.climate_database.json")
+config_dir = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
+settings_dir = os.path.join(config_dir, "climate")
+settings_path = os.path.join(settings_dir, "forecast_settings.json") 
 
-settings_path = os.path.expanduser("~/.cli-mate_forecast_settings")
+
+data_dir = os.environ.get("XDG_DATA_HOME", os.path.expanduser("~/.local/share"))
+DB_dir = os.path.join(data_dir, "climate")
+DB_path = os.path.join(DB_dir, "database.json")
+
+os.makedirs(settings_dir, exist_ok=True) 
+os.makedirs(DB_dir, exist_ok=True)
+
+
 console = Console()
 
 
@@ -97,60 +107,56 @@ menu_table.add_row("  7. Exit", style= "bold #b8bb26")
 
 def data_base_reader_no_print():
     if not os.path.exists(DB_path):
-    
         with open(DB_path, "w", encoding="utf-8") as file:
             json.dump({}, file)
         
-    with open(DB_path, "r", encoding="utf-8") as file:
-        data_base = json.load(file)
-        return data_base
+    try:
+        with open(DB_path, "r", encoding="utf-8") as file:
+            data_base = json.load(file)
+        return validate("database", data_base)
+    except (json.JSONDecodeError, TypeError, OSError):
+        with open(DB_path, "w", encoding="utf-8") as file:
+            json.dump({}, file)
+        return {}
 
 
 def data_base_reader_no_print_settings():
     Default_settings = {
-    "display_mode": "default",
-    "daily_display": {
-        "Weather_desc": True,
-        "Emoji": True,
-        "Max_apparent_temp": True,
-        "UV_index": True,
-        "Rain_chance": True,
-        "Sunrise": True,
-        "Sunset": True
-    }
+        "display_mode": "default",
+        "daily_display": {
+            "Weather_desc": True,
+            "Emoji": True,
+            "Max_apparent_temp": True,
+            "UV_index": True,
+            "Rain_chance": True,
+            "Sunrise": True,
+            "Sunset": True
+        }
     }
     
     if not os.path.exists(settings_path):
-    
         with open(settings_path, "w", encoding="utf-8") as file:
             json.dump(Default_settings, file, ensure_ascii=False, indent=4)
         
-    with open(settings_path, "r", encoding="utf-8") as file:
-        data_base = json.load(file)
-        return data_base
+    try:
+        with open(settings_path, "r", encoding="utf-8") as file:
+            data_base = json.load(file)
+            
+        validated_settings = validate("daily_settings", data_base)
+        
+        if validated_settings != data_base:
+            with open(settings_path, "w", encoding="utf-8") as file:
+                json.dump(validated_settings, file, ensure_ascii=False, indent=4)
+                
+        return validated_settings
+    except (json.JSONDecodeError, TypeError, OSError):
+        with open(settings_path, "w", encoding="utf-8") as file:
+            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
+        return Default_settings
 
 def data_base_reader_no_print_display_mode():
-    Default_settings = {
-    "display_mode": "default",
-    "daily_display": {
-        "Weather_desc": True,
-        "Emoji": True,
-        "Max_apparent_temp": True,
-        "UV_index": True,
-        "Rain_chance": True,
-        "Sunrise": True,
-        "Sunset": True
-    }
-    }
-    
-    if not os.path.exists(settings_path):
-    
-        with open(settings_path, "w", encoding="utf-8") as file:
-            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
-        
-    with open(settings_path, "r", encoding="utf-8") as file:
-        data_base = json.load(file)
-        return data_base["display_mode"]
+    settings = data_base_reader_no_print_settings()
+    return settings.get("display_mode", "default")
 
 
 
@@ -1280,36 +1286,39 @@ def choose_an_option():
 
 
 
-def get_weather_backup(backup_url, backup_parameters, city_name):
+def get_weather_backup(backup_url, backup_params, city_name, lat, lon):
     
-    backup_weather_table = Table(
-    title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
-    box=box.ROUNDED,
-    show_header=False,
-    border_style="#928374"
-    )
+    
+    if display_mode == "short":
+        backup_params = {
+            "latitude": lat,
+            "longitude": lon,
+            "current": ["temperature_2m", "relative_humidity_2m", "apparent_temperature", "is_day", "precipitation", "rain", "showers", "snowfall", "weather_code", "cloud_cover", "surface_pressure", "wind_speed_10m", "wind_direction_10m", "wind_gusts_10m"],
+            "timezone": "auto",
+            }
+    
+    elif display_mode == "daily":
+        backup_params = {
+	    "latitude": lat,
+	    "longitude": lon,
+	    "daily": ["weather_code", "temperature_2m_max", "temperature_2m_min", "sunset", "uv_index_clear_sky_max", "uv_index_max", "rain_sum", "showers_sum", "snowfall_sum", "apparent_temperature_max", "precipitation_probability_max", "sunrise"],
+        "timezone": "auto",
+        }
     
     try:
 
-        response = requests.get(backup_url, backup_parameters, timeout= 3)
+        response = requests.get(backup_url, backup_params, timeout= 3)
         data = response.json()
-        if display_mode == "short" or display_mode == "default" or display_mode == "detailed":
-            if response.status_code == 200:
-                console.print("[bold #b8bb26]\nRequest to open meteo: success[/]")            
-                current_temp = data["current_weather"]["temperature"]
+        if response.status_code == 200:
+            return data, city_name
 
-                backup_weather_table.add_row(f"[bold #928374]Current temperature in [/][bold #fabd2f]{city_name}[/] [bold #928374]is[/] [bold #fe8019]{current_temp}[/][bold #83a598]°C[/]")
-                console.print(backup_weather_table)
+
                 
     
-            else:
-                print(f"Request error: {response.status_code}")
-                print("No other options left, you got to wait till everything's ok")
-        elif display_mode == "daily":
-            return data, city_name, display_mode
-
-            
-
+        else:
+            print(f"Request error: {response.status_code}")
+            print("No other options left, you got to wait till everything's ok")
+        
 
 
 
@@ -1327,18 +1336,10 @@ def get_weather_backup(backup_url, backup_parameters, city_name):
 
 def get_weather(city_name, lat, lon):
     try:
-        
-        weather_table = Table(
-        title="[bold #fabd2f]Current weather[/bold #fabd2f]", 
-        box=box.ROUNDED,
-        show_header=False,
-        border_style="#928374"
-        )
+    
         
         
-        
-        
-        
+        raw_url = "https://wttr.in"
         
         url = f"https://wttr.in/{city_name}"
         parameters = {
@@ -1360,13 +1361,13 @@ def get_weather(city_name, lat, lon):
             response = requests.get(url, parameters, timeout= 3)
 
             if response.status_code == 200:
-                console.print("[bold #b8bb26]\nRequest to wttr.in: success[/]")
+                console.print(f"[bold #b8bb26]\nRequest to {raw_url}: success[/]")
                 data = response.json()
                 return data, city_name
             else:
-                print(f"Request error: {response.status_code}")
-                print("Attempting backup website")
-                get_weather_backup(backup_url, backup_params, city_name)
+                console.print(f"[bold red]Request error: {response.status_code}[/]")
+                print("[bold #fabd2f]Attempting backup website[/]")
+                data, city_name = tuple(get_weather_backup(backup_url, backup_params, city_name, lat, lon))
                 return data, city_name
         elif display_mode == "daily":
             response = requests.get(backup_url, backup_params, timeout= 5)
@@ -1379,3 +1380,67 @@ def get_weather(city_name, lat, lon):
     except Exception as e:
         print(f"Connection error: {e}")
 
+
+
+
+
+
+def validate(file_option, data):
+    if file_option == "database":
+        if not isinstance(data, dict):
+            return {}
+        
+        valid_db = {}
+        for city, info in data.items():
+            if isinstance(info, dict) and "Country" in info and "latitude" in info and "longitude" in info:
+                try:
+                    float(info["latitude"])
+                    float(info["longitude"])
+                    valid_db[city] = info
+                except (ValueError, TypeError):
+                    continue
+        return valid_db
+        
+    elif file_option == "daily_settings":
+        default_settings = {
+            "display_mode": "default",
+            "daily_display": {
+                "Weather_desc": True,
+                "Emoji": True,
+                "Max_apparent_temp": True,
+                "UV_index": True,
+                "Rain_chance": True,
+                "Sunrise": True,
+                "Sunset": True
+            }
+        }
+        
+        if not isinstance(data, dict):
+            return default_settings
+            
+        valid_settings_dict = {}
+        try:
+            allowed_modes = ["default", "detailed", "short", "daily"]
+            mode = data.get("display_mode")
+            valid_settings_dict["display_mode"] = mode if mode in allowed_modes else "default"
+
+            valid_settings_dict["daily_display"] = {}
+            
+            user_display = data.get("daily_display", {})
+            if not isinstance(user_display, dict):
+                user_display = {}
+
+            settings_keys = ["Weather_desc", "Emoji", "Max_apparent_temp", "UV_index", "Rain_chance", "Sunrise", "Sunset"]
+            
+            for key in settings_keys:
+                val = user_display.get(key)
+                
+                if isinstance(val, bool):
+                    valid_settings_dict["daily_display"][key] = val
+                else:
+                    valid_settings_dict["daily_display"][key] = True
+                    
+            return valid_settings_dict
+            
+        except Exception: 
+            return default_settings
