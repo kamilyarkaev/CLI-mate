@@ -173,5 +173,23 @@ Therefore I need to upload my program to the downstream debian repo,
 
 There are also still a few issues with database file paths, as I need to make sure they comply with XDG standards and don't clutter the user's home directory.
 
+>**From July 14th 21:40 2026   14.07.2026**.
 
+Added validate() function to confirm if the files have the proper containings and structure, and also if the user decides to test the program by changing the containings of the files
+
+I have also moved all system paths away from direct home directory clutter (~/.climate_database.json and ~/.cli-mate_forecast_settings) to follow modern Linux packaging standards
+
+Now: 
+
+Configuration: ~/.config/climate/forecast_settings.json 
+
+Saved Cities Database: ~/.local/share/climate/database.json
+
+Also I integrated automated directory creation using os.makedirs(.....) to prevent file path errors on clean installations
+
+Configured Open-Meteo as the primary API provider for all forecast modes (short, default, detailed, daily), utilizing its high uptime and rich dataset (wind direction, speed, UV index, native day/night flags)
+
+Implemented inmemory lazy loading caching _cached_db and _cached_settings, reducing slow filesystem read operations to just once per application lifecycle
+
+I'm still planning to add delete_city() function and implement wind direction, wind speed, rain chance,uv index and wind busts to regular forecast modes for information saturation
 
