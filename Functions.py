@@ -12,6 +12,8 @@ import os
 
 
 
+_cached_db = None
+_cached_settings = None
 global emojis_dict
 
 config_dir = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
@@ -166,53 +168,63 @@ def validate(file_option, data):
             return default_settings
 
 def data_base_reader_no_print():
-    if not os.path.exists(DB_path):
-        with open(DB_path, "w", encoding="utf-8") as file:
-            json.dump({}, file)
-        
-    try:
-        with open(DB_path, "r", encoding="utf-8") as file:
-            data_base = json.load(file)
-        return validate("database", data_base)
-    except (json.JSONDecodeError, TypeError, OSError):
-        with open(DB_path, "w", encoding="utf-8") as file:
-            json.dump({}, file)
-        return {}
+    global _cached_db
+    
+    if _cached_db is None:
+        if not os.path.exists(DB_path):
+            with open(DB_path, "w", encoding="utf-8") as file:
+                json.dump({}, file)
+            
+        try:
+            with open(DB_path, "r", encoding="utf-8") as file:
+                data_base = json.load(file)
+            _cached_db = validate("database", data_base)
+        except (json.JSONDecodeError, TypeError, OSError):
+            with open(DB_path, "w", encoding="utf-8") as file:
+                json.dump({}, file)
+            _cached_db = {}
+            
+    return _cached_db
 
 
 def data_base_reader_no_print_settings():
-    Default_settings = {
-        "display_mode": "default",
-        "daily_display": {
-            "Weather_desc": True,
-            "Emoji": True,
-            "Max_apparent_temp": True,
-            "UV_index": True,
-            "Rain_chance": True,
-            "Sunrise": True,
-            "Sunset": True
-        }
-    }
+    global _cached_settings
     
-    if not os.path.exists(settings_path):
-        with open(settings_path, "w", encoding="utf-8") as file:
-            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
+    if _cached_settings is None:
+        Default_settings = {
+            "display_mode": "default",
+            "daily_display": {
+                "Weather_desc": True,
+                "Emoji": True,
+                "Max_apparent_temp": True,
+                "UV_index": True,
+                "Rain_chance": True,
+                "Sunrise": True,
+                "Sunset": True
+            }
+        }
         
-    try:
-        with open(settings_path, "r", encoding="utf-8") as file:
-            data_base = json.load(file)
-            
-        validated_settings = validate("daily_settings", data_base)
-        
-        if validated_settings != data_base:
+        if not os.path.exists(settings_path):
             with open(settings_path, "w", encoding="utf-8") as file:
-                json.dump(validated_settings, file, ensure_ascii=False, indent=4)
+                json.dump(Default_settings, file, ensure_ascii=False, indent=4)
+            
+        try:
+            with open(settings_path, "r", encoding="utf-8") as file:
+                data_base = json.load(file)
                 
-        return validated_settings
-    except (json.JSONDecodeError, TypeError, OSError):
-        with open(settings_path, "w", encoding="utf-8") as file:
-            json.dump(Default_settings, file, ensure_ascii=False, indent=4)
-        return Default_settings
+            validated_settings = validate("daily_settings", data_base)
+            
+            if validated_settings != data_base:
+                with open(settings_path, "w", encoding="utf-8") as file:
+                    json.dump(validated_settings, file, ensure_ascii=False, indent=4)
+                    
+            _cached_settings = validated_settings
+        except (json.JSONDecodeError, TypeError, OSError):
+            with open(settings_path, "w", encoding="utf-8") as file:
+                json.dump(Default_settings, file, ensure_ascii=False, indent=4)
+            _cached_settings = Default_settings
+
+    return _cached_settings
 
 def data_base_reader_no_print_display_mode():
     settings = data_base_reader_no_print_settings()
@@ -916,45 +928,9 @@ def get_forecasts_by_type(data, city_name,choice):
 
             case "daily":
                 
-                
-                
-                #  CURRENT DATA (СЕЙЧАС)
-                current_time = data["current"]["time"]
-                current_temperature_2m = data["current"]["temperature_2m"]
-                current_relative_humidity_2m = data["current"]["relative_humidity_2m"]
-                current_apparent_temperature = data["current"]["apparent_temperature"]
-                current_is_day = data["current"]["is_day"]
-                current_precipitation = data["current"]["precipitation"]
-                current_rain = data["current"]["rain"]
-                current_showers = data["current"]["showers"]
-                current_snowfall = data["current"]["snowfall"]
-                current_weather_code = data["current"]["weather_code"]
-                current_cloud_cover = data["current"]["cloud_cover"]
-                current_surface_pressure = data["current"]["surface_pressure"]
-                current_wind_speed_10m = data["current"]["wind_speed_10m"]
-                current_wind_direction_10m = data["current"]["wind_direction_10m"]
-                current_wind_gusts_10m = data["current"]["wind_gusts_10m"]
+            
 
-
-
-                #  HOURLY DATA (ПО ЧАСАМ)
-                # Все переменные ниже — это обычные списки (lists) Python
-                hourly_time = data["hourly"]["time"]  # Список временных строк (например, ["2026-07-10T00:00", итд])
-                hourly_temperature_2m = data["hourly"]["temperature_2m"]
-                hourly_weather_code = data["hourly"]["weather_code"]
-                hourly_snowfall = data["hourly"]["snowfall"]
-                hourly_showers = data["hourly"]["showers"]
-                hourly_rain = data["hourly"]["rain"]
-                hourly_precipitation = data["hourly"]["precipitation"]
-                hourly_visibility = data["hourly"]["visibility"]
-                hourly_wind_speed_10m = data["hourly"]["wind_speed_10m"]
-                hourly_apparent_temperature = data["hourly"]["apparent_temperature"]
-                hourly_precipitation_probability = data["hourly"]["precipitation_probability"]
-                hourly_wind_direction_10m = data["hourly"]["wind_direction_10m"]
-
-
-
-                #  DAILY DATA (ПО ДНЯМ)
+                #  Daily data  по дням
                 # Все переменные ниже — это обычные списки из 7 элементов (на неделю вперед)
                 daily_time = data["daily"]["time"]  # Список дат ["2026-07-10", "2026-07-11" итд])
                 daily_weather_code = data["daily"]["weather_code"]
@@ -1485,9 +1461,13 @@ def choose_an_option():
         saved_cities_table.add_row(f"{index}. [bold yellow]{city_name}[/]")
     console.print(saved_cities_table)
     console.rule(style="bold #928374")
-    choice = int(console.input("[bold #b8bb26]Choose the number of the saved city to see weather: [/]"))
-    selected_city = current_list[choice - 1]
-    return selected_city
+    while True:
+        user_input = console.input("[bold #b8bb26]Choose the number of the saved city to see weather: [/]").strip()
+        if user_input.isdigit():
+            choice = int(user_input)
+            if 1 <= choice <= len(current_list):
+                return current_list[choice - 1]
+        console.print("[bold red]Invalid option. Please enter a valid number.[/]")
 
 
 
