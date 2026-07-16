@@ -1,3 +1,7 @@
+# Copyright (C) 2026 Kamil Yarkaev kamilarkaev@gmail.com
+# License: GPL-3.0+
+
+
 from Functions import main_menu, greeting
 from rich.console import Console
 

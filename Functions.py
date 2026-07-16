@@ -1,3 +1,7 @@
+# Copyright (C) 2026 Kamil Yarkaev kamilarkaev@gmail.com
+# License: GPL-3.0+
+
+
 import requests
 import json
 from rich.console import Console
@@ -512,15 +516,16 @@ def explain_why_coordinates():
         "[bold #928374]CLI-Mate uses geographic coordinates (Latitude & Longitude) [/]"
         "[bold #928374]for one specific reason:[/]\n\n"
         
-        "[bold #fe8019]Backup Weather Provider (Open-Meteo)[/]\n"
-        "[bold #928374]Our primary weather source is[/] [bold #b8bb26]wttr.in[/][bold #928374], which we query directly using your city's name.[/] "
-        "[bold #928374]However, if [/][bold #b8bb26]wttr.in [/][bold #928374]is down or unresponsive,[/][bold #b8bb26] CLI-Mate [/][bold #928374]automatically switches to our backup[/] "
-        "[bold #928374]provider,[/] [bold #fe8019]Open-Meteo[/] [bold #928374](which runs in a simplified, non-colorized mode).[/]\n\n"
+        "[bold #fe8019]Primary Weather Provider (Open-Meteo)[/]\n"
+        "[bold #928374]Our primary weather source is[/] [bold #fe8019]Open-Meteo[/][bold #928374], which we choose for its high uptime, reliability, and rich dataset. [/] "
+        "[bold #928374]Unlike other services, [/][bold #fe8019]Open-Meteo[/][bold #928374] cannot search for weather by city names, it strictly requires[/] "
+        "[bold #b8bb26]precise latitude and longitude coordinates[/][bold #928374].[/]\n\n"
         
-        "[bold #928374]Unlike[/] [bold #b8bb26]wttr.in[/][bold #928374],[/][bold #fe8019] Open-Meteo [/][bold #928374]cannot[/] [bold #b8bb26]search for weather by city names, it strictly requires[/] "
-        "[bold #928374]precise[/][bold #b8bb26] latitude and longitude coordinates[/][bold #928374]. Saving these coordinates in data_base.json[/] "
-        "[bold #928374]when you first add a city ensures that our backup weather request works instantly and[/] "
-        "[bold #928374]reliably whenever the [/][bold #b8bb26]primary website is unavailable![/]\n"
+        "[bold #928374]Saving these coordinates in[/] [bold #fabd2f]database.json[/] [bold #928374]when you first search and add a city ensures that our primary weather requests work instantly and with pinpoint accuracy![/]\n\n"
+        
+        "[bold #b8bb26]Backup Weather Provider (wttr.in)[/]\n"
+        "[bold #928374]However, if [/][bold #fe8019]Open-Meteo[/][bold #928374] is down or unresponsive, [/][bold #b8bb26]CLI-Mate[/] [bold #928374]automatically switches to our backup[/] "
+        "[bold #928374]provider,[/] [bold #b8bb26]wttr.in[/] [bold #928374](which does allow querying directly by your city's name as a failsafe).[/]\n"
     )
     console.print(explanation_text)
     console.rule(style="bold #928374")
