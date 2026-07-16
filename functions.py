@@ -9,7 +9,7 @@ from rich.table import Table
 from rich import box
 import time
 from datetime import datetime
-from Ascii_arts import weather_arts
+from ascii_arts import weather_arts
 import random
 import os
 
@@ -343,7 +343,6 @@ def main_menu():
                         view_or_delete_saved_cities_and_coords()
 
                 case "4":
-                    global choice_table
                     
                     display_mode = data_base_reader_no_print_display_mode()
                     choice_table = Table(
@@ -442,6 +441,8 @@ def main_menu():
                     all_valid = valid_digits + possible_choices_list
                     
                     while choosing:
+                        console.clear()
+                        console.print(saved_settings())
                         choice = console.input("[bold #fabd2f]Enter the number of the setting you want to change:(or 'e' to leave)[/] ").strip().lower()
                     
                         if choice not in all_valid:
@@ -498,7 +499,8 @@ def main_menu():
                     with open(settings_path, "w", encoding="utf-8") as file:
                          json.dump(database, file, ensure_ascii=False, indent=4)
                 
-                
+                    global _cached_settings
+                    _cached_settings = database
                 
                 
                 
@@ -1511,12 +1513,6 @@ def search_for_city():
 
 
 
-
-
-
-db = data_base_reader_no_print()
-
-cities_list = list(db.keys())
 
 def choose_an_option():
     current_db = data_base_reader_no_print()

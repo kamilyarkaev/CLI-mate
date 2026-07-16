@@ -2,7 +2,7 @@
 # License: GPL-3.0+
 
 
-from Functions import main_menu, greeting
+from functions import main_menu, greeting
 from rich.console import Console
 
 console = Console()
