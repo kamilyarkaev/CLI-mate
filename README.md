@@ -39,10 +39,10 @@ You can install **climate** on your system using one of the following methods:
 This is the easiest way to install. It automatically registers the global `climate` command and resolves all system-wide dependencies.
 
 1. Go to the [Releases](https://github.com/kamilyarkaev/CLI-mate/releases) page of this repository.
-2. Download the latest `.deb` package (e.g., `climate_1.1_linux_amd64.deb`).
+2. Download the latest `.deb` package (e.g., `climate_1.4_linux_all.deb`).
 3. Open your terminal in the directory where the file was downloaded and run:
    ```bash
-   sudo apt install ./climate_1.1_linux_amd64.deb
+   sudo apt install ./climate_1.4_linux_all.deb
    ```
 4. Run the application from anywhere by typing:
    ```bash
