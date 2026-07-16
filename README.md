@@ -152,7 +152,7 @@ Now alongside temperature in any forecast display mode you can see the time of s
 
 Tomorrow I will work with pyinstaller to make this a 1 file program
 
->**From July 2nd/3rd/4th/9th 21:52 2026     02.07.2026**.
+>**From July 2nd/3rd/4th/9th/15th 21:52 2026     02.07.2026**.
 
 I did not work on CLI-Mate today because I am swamped with my homework right now, sorry if anyone cares
 
@@ -192,4 +192,11 @@ Configured Open-Meteo as the primary API provider for all forecast modes (short,
 Implemented inmemory lazy loading caching _cached_db and _cached_settings, reducing slow filesystem read operations to just once per application lifecycle
 
 I'm still planning to add delete_city() function and implement wind direction, wind speed, rain chance,uv index and wind busts to regular forecast modes for information saturation
+
+
+>**From July 16th 20:20 2026   16.07.2026**.
+
+Cli-Mate is now fully ready for use!
+
+
 
