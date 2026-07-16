@@ -13,6 +13,8 @@ import os
 
 _cached_db = None
 _cached_settings = None
+do_a_break = False
+
 global emojis_dict
 
 config_dir = os.environ.get("XDG_CONFIG_HOME", os.path.expanduser("~/.config"))
@@ -29,6 +31,28 @@ os.makedirs(DB_dir, exist_ok=True)
 
 
 console = Console()
+
+
+
+
+
+
+today_sunrise_mins = 360
+today_sunset_mins = 1080
+tomorrow_sunrise_mins = 1800
+tomorrow_sunset_mins = 2520
+day_after_tomorrow_sunrise_mins = 3240
+day_after_tomorrow_sunset_mins = 3960
+
+today_sunrise_true_time = "06:00"
+today_sunset_true_time = "18:00"
+tomorrow_sunrise_true_time = "06:00"
+tomorrow_sunset_true_time = "18:00"
+day_after_tomorrow_sunrise_true_time = "06:00"
+day_after_tomorrow_sunset_true_time = "18:00"
+
+
+
 
 
 
@@ -310,7 +334,7 @@ def main_menu():
 
                 case "3":
                     if not db:
-                        console.print("\n[bold red]Your database is empty![/]")
+                        console.print("\n[bold red]Your database is empty! Add a city[/]")
                     else:
                         view_or_delete_saved_cities_and_coords()
 
@@ -467,7 +491,6 @@ def main_menu():
                                 choosing = False
                                 break
 
-                    # Код записи теперь стоит ЗДЕСЬ и гарантированно сработает сразу после выхода из цикла настройки
                     with open(settings_path, "w", encoding="utf-8") as file:
                          json.dump(database, file, ensure_ascii=False, indent=4)
                 
@@ -535,36 +558,40 @@ def determine_time_day_or_night(data, time):
     
     global day_after_tomorrow_sunrise_true_time, day_after_tomorrow_sunset_true_time, day_after_tomorrow_sunrise_mins, day_after_tomorrow_sunset_mins, day_after_tomorrow_sunrise_hours, day_after_tomorrow_sunrise_minutes, day_after_tomorrow_sunset_hours, day_after_tomorrow_sunset_minutes, today_sunrise_mins, today_sunset_mins, tomorrow_sunrise_mins, tomorrow_sunset_mins, tomorrow_sunset_true_time, tomorrow_sunrise_true_time, today_sunrise_true_time, today_sunset_true_time
 
-    sunrise_hours, sunrise_minutes = tuple(data["weather"][0]["astronomy"][0]["sunrise"].split()[0].split(":"))
-    sunset_hours, sunset_minutes = tuple(data["weather"][0]["astronomy"][0]["sunset"].split()[0].split(":"))
+    try:
 
-    
-    tomorrow_sunrise_hours, tomorrow_sunrise_minutes = tuple(data["weather"][1]["astronomy"][0]["sunrise"].split()[0].split(":"))
-    tomorrow_sunset_hours, tomorrow_sunset_minutes = tuple(data["weather"][1]["astronomy"][0]["sunset"].split()[0].split(":"))
+        sunrise_hours, sunrise_minutes = tuple(data["weather"][0]["astronomy"][0]["sunrise"].split()[0].split(":"))
+        sunset_hours, sunset_minutes = tuple(data["weather"][0]["astronomy"][0]["sunset"].split()[0].split(":"))
 
-    day_after_tomorrow_sunset_hours, day_after_tomorrow_sunset_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunset"].split()[0].split(":"))
-    day_after_tomorrow_sunrise_hours, day_after_tomorrow_sunrise_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunrise"].split()[0].split(":"))
-    
+        
+        tomorrow_sunrise_hours, tomorrow_sunrise_minutes = tuple(data["weather"][1]["astronomy"][0]["sunrise"].split()[0].split(":"))
+        tomorrow_sunset_hours, tomorrow_sunset_minutes = tuple(data["weather"][1]["astronomy"][0]["sunset"].split()[0].split(":"))
 
-    today_sunset_mins = int(sunset_hours)*60 + int(sunset_minutes) + 720
-    today_sunrise_mins = int(sunrise_hours)*60 + int(sunrise_minutes)   
-    
-    tomorrow_sunset_mins = int(tomorrow_sunset_hours)*60 + int(tomorrow_sunset_minutes) + 720 + 1440
-    tomorrow_sunrise_mins = int(tomorrow_sunrise_hours)*60 + int(tomorrow_sunrise_minutes) + 1440
-    
-    tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes):02d}"
-    tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes):02d}"
-    
-    today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes):02d}"
-    today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes):02d}"
-    
-    day_after_tomorrow_sunset_mins = int(day_after_tomorrow_sunset_hours)*60 + int(day_after_tomorrow_sunset_minutes) + 720 + 2880
-    day_after_tomorrow_sunrise_mins = int(day_after_tomorrow_sunrise_hours)*60 + int(day_after_tomorrow_sunrise_minutes) + 2880
-    
-    day_after_tomorrow_sunrise_true_time = f"{int(day_after_tomorrow_sunrise_hours):02d}:{int(day_after_tomorrow_sunrise_minutes):02d}"
-    day_after_tomorrow_sunset_true_time = f"{int(day_after_tomorrow_sunset_hours):02d}:{int(day_after_tomorrow_sunset_minutes):02d}"
+        day_after_tomorrow_sunset_hours, day_after_tomorrow_sunset_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunset"].split()[0].split(":"))
+        day_after_tomorrow_sunrise_hours, day_after_tomorrow_sunrise_minutes  = tuple(data["weather"][2]["astronomy"][0]["sunrise"].split()[0].split(":"))
+        
+
+        today_sunset_mins = int(sunset_hours)*60 + int(sunset_minutes) + 720
+        today_sunrise_mins = int(sunrise_hours)*60 + int(sunrise_minutes)   
+        
+        tomorrow_sunset_mins = int(tomorrow_sunset_hours)*60 + int(tomorrow_sunset_minutes) + 720 + 1440
+        tomorrow_sunrise_mins = int(tomorrow_sunrise_hours)*60 + int(tomorrow_sunrise_minutes) + 1440
+        
+        tomorrow_sunset_true_time = f"{int(tomorrow_sunset_hours) + 12:02d}:{int(tomorrow_sunset_minutes):02d}"
+        tomorrow_sunrise_true_time = f"{int(tomorrow_sunrise_hours):02d}:{int(tomorrow_sunrise_minutes):02d}"
+        
+        today_sunset_true_time = f"{int(sunset_hours) + 12:02d}:{int(sunset_minutes):02d}"
+        today_sunrise_true_time = f"{int(sunrise_hours):02d}:{int(sunrise_minutes):02d}"
+        
+        day_after_tomorrow_sunset_mins = int(day_after_tomorrow_sunset_hours)*60 + int(day_after_tomorrow_sunset_minutes) + 720 + 2880
+        day_after_tomorrow_sunrise_mins = int(day_after_tomorrow_sunrise_hours)*60 + int(day_after_tomorrow_sunrise_minutes) + 2880
+        
+        day_after_tomorrow_sunrise_true_time = f"{int(day_after_tomorrow_sunrise_hours):02d}:{int(day_after_tomorrow_sunrise_minutes):02d}"
+        day_after_tomorrow_sunset_true_time = f"{int(day_after_tomorrow_sunset_hours):02d}:{int(day_after_tomorrow_sunset_minutes):02d}"
    
    
+    except (KeyError, IndexError, ValueError):
+        pass
     is_night = (forecast_minutes < today_sunrise_mins) or (forecast_minutes > today_sunset_mins)
     
     
@@ -1191,7 +1218,6 @@ def get_forecasts_by_type(data, city_name,choice):
                     detailed_forecast_table.add_column("Time", justify= "center", style="#fabd2f")
                     detailed_forecast_table.add_column("Weather", justify= "right", style="#b8bb26")
 
-                    upcoming_weather_dict_list_detailed = upcoming
 
                     
                     current_time = datetime.now().strftime("%H:%M")
@@ -1335,39 +1361,36 @@ def view_or_delete_saved_cities_and_coords():
         
         console.print(saved_cities_table)
         
+        current_cities_list = list(current_db.keys())
+
         while working:
-            choice = console.input("[bold #b8bb26]Type the number of the city you want to delete, or 'e' to leave: [/]")
+
+            choice = console.input("\n[bold #b8bb26]Type the number of the city you want to delete, or 'e' to leave: [/]").strip()
+            choice_lower = choice.lower()
+            allowed_input = ["e", "exit", "l", "x", "leave", "escape", "q", "quit"]
             
-            
-            if choice.strip().lower() == "e" or  choice.strip().lower() == "exit" or choice.strip().lower() == "l" or choice.strip().lower() == "x" or choice.strip().lower() == "leave" or choice.strip().lower() == "escape" or choice.strip().lower() == "q" or choice.strip().lower() == "quit":
+
+            if choice_lower in allowed_input:
                 break
             
-            if int(choice) not in indexes_list:
-                console.print(f"[bold red]Enter a number that matches a city[/]")
+
+            if not choice.isdigit():
+                console.print("[bold red]Please enter a valid number or 'e' to leave.[/]")
+                continue
+                
+            choice_idx = int(choice)
+            if choice_idx not in indexes_list:
+                console.print("[bold red]Enter a number that matches a city[/]")
                 continue
 
-
+            deleted_city_name = current_cities_list[choice_idx - 1]
+            current_db.pop(deleted_city_name, None)
             
-            if int(choice) in indexes_list:
-                
-                current_cities_list = []
-                
-                for x in current_db:
-                    current_cities_list.append(x)
-                
-                deleted_city_name = current_cities_list[int(choice) - 1]
-
-                current_db.pop(deleted_city_name, None)
-                
-                
-                with open(DB_path, "w", encoding="utf-8") as file:
-        
-                    json.dump(current_db, file, ensure_ascii=False, indent=4)
-                
-                
-                console.print(f"[bold #b8bb26]Deleted city:[/] [bold #fabd2f]{deleted_city_name}[/]\n")
-                
-                working = False
+            with open(DB_path, "w", encoding="utf-8") as file:
+                json.dump(current_db, file, ensure_ascii=False, indent=4)
+            
+            console.print(f"[bold #b8bb26]Deleted city:[/] [bold #fabd2f]{deleted_city_name}[/]\n")
+            working = False
                 
                   
 
@@ -1440,7 +1463,7 @@ def search_for_city():
                 payload = {
                     "name": city 
                     }   
-                response = requests.get(url,params = payload)
+                response = requests.get(url,params = payload, timeout= 5)
                 data = response.json()
             
             
@@ -1473,10 +1496,10 @@ def search_for_city():
                     
 
             console.rule(style="bold #928374")
-            dict = {
+            city_info = {
                 "City": name, "Country": country, "latitude": latitude, "longitude": longitude
             }
-            return dict
+            return city_info
         except Exception :
             console.print(f"[bold red]Error,[/][bold #b8bb26]Try to write the name differently[/]")
             continue
