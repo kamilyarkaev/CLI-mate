@@ -312,7 +312,7 @@ def main_menu():
                     if not db:
                         console.print("\n[bold red]Your database is empty![/]")
                     else:
-                        view_saved_cities_and_coords()
+                        view_or_delete_saved_cities_and_coords()
 
                 case "4":
                     global choice_table
@@ -1311,7 +1311,7 @@ def saved_settings():
 
 
 
-def view_saved_cities_and_coords():
+def view_or_delete_saved_cities_and_coords():
         
         current_db = data_base_reader_no_print()
         
