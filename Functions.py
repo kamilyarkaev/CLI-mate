@@ -11,7 +11,6 @@ import os
 
 
 
-
 _cached_db = None
 _cached_settings = None
 global emojis_dict
@@ -100,7 +99,7 @@ menu_table = Table(
 )
 menu_table.add_row("  1. Get weather for a saved city", style= "bold #b8bb26")
 menu_table.add_row("  2. Add a new city", style= "bold #b8bb26")
-menu_table.add_row("  3. View saved cities and coordinates", style= "bold #b8bb26")
+menu_table.add_row("  3. View or delete saved cities and coordinates", style= "bold #b8bb26")
 menu_table.add_row("  4. Change forecast display settings", style= "bold #b8bb26")
 menu_table.add_row("  5. Change daily(whole week) forecast parameters", style= "bold #b8bb26 ")
 menu_table.add_row("  6. Why does this app use coordinates?", style= "bold #b8bb26")
@@ -266,7 +265,6 @@ def main_menu():
 
 
             show_menu_box = False
-            time.sleep(0.5)
             choice = console.input("[bold #fabd2f]You are in menu, choose an option (1-6) or type 'm' to show menu or clear to clear: [/]").strip().lower()
             
             match choice:
@@ -312,9 +310,9 @@ def main_menu():
 
                 case "3":
                     if not db:
-                        print("\nYour database is empty!")
+                        console.print("\n[bold red]Your database is empty![/]")
                     else:
-                        console.print(saved_cities_and_coords())
+                        view_saved_cities_and_coords()
 
                 case "4":
                     global choice_table
@@ -1313,7 +1311,8 @@ def saved_settings():
 
 
 
-def saved_cities_and_coords():
+def view_saved_cities_and_coords():
+        
         current_db = data_base_reader_no_print()
         
         saved_cities_table = Table(
@@ -1322,10 +1321,60 @@ def saved_cities_and_coords():
         show_header=False,
         border_style="#928374"
         )
+        
+        counter = 1
+        
+        indexes_list = []
+        
         for city_name, coords in current_db.items():
-            saved_cities_table.add_row(f" [bold #fabd2f]{city_name}[/] ([bold #b8bb26]{coords['Country']}[/]) — [bold #928374]Latitude:[/] [bold #fe8019]{coords['latitude']}[/], [bold #928374]Longitude:[/] [bold #83a598]{coords['longitude']}[/]")
+            saved_cities_table.add_row(f"[bold #83a598]{counter}[/] [bold #fabd2f]{city_name}[/] ([bold #b8bb26]{coords['Country']}[/]) — [bold #928374]Latitude:[/] [bold #fe8019]{coords['latitude']}[/], [bold #928374]Longitude:[/] [bold #83a598]{coords['longitude']}[/]")
+            indexes_list.append(counter)
+            counter +=1
+        
+        working = True
+        
+        console.print(saved_cities_table)
+        
+        while working:
+            choice = console.input("[bold #b8bb26]Type the number of the city you want to delete, or 'e' to leave: [/]")
+            
+            
+            if choice.strip().lower() == "e" or  choice.strip().lower() == "exit" or choice.strip().lower() == "l" or choice.strip().lower() == "x" or choice.strip().lower() == "leave" or choice.strip().lower() == "escape" or choice.strip().lower() == "q" or choice.strip().lower() == "quit":
+                break
+            
+            if int(choice) not in indexes_list:
+                console.print(f"[bold red]Enter a number that matches a city[/]")
+                continue
 
-        return saved_cities_table
+
+            
+            if int(choice) in indexes_list:
+                
+                current_cities_list = []
+                
+                for x in current_db:
+                    current_cities_list.append(x)
+                
+                deleted_city_name = current_cities_list[int(choice) - 1]
+
+                current_db.pop(deleted_city_name, None)
+                
+                
+                with open(DB_path, "w", encoding="utf-8") as file:
+        
+                    json.dump(current_db, file, ensure_ascii=False, indent=4)
+                
+                
+                console.print(f"[bold #b8bb26]Deleted city:[/] [bold #fabd2f]{deleted_city_name}[/]\n")
+                
+                working = False
+                
+                  
+
+        
+        
+        
+        return None
 
 
 
